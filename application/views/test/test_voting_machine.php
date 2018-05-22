@@ -80,7 +80,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div> 
 
         <br>
-        <?php if (!$finalizado){?>
+                    <?php if (!$finalizado){?>
+                    	<h3>Cedulas Asociadas a esta Maquina</h3>
+            			<br>
+            			<form method="POST" action="">
+            			    
+	              			<table id="dataTable">
+            				<thead>
+                        	<tr>
+                        		<td>Cedulas</td>
+                        		<td>Nombre</td>
+                        		<td>Apellido</td>
+                        		<td>Estatus Votaci&oacute;n</td>
+                          	</tr>
+                        </thead>
+                        <tbody>   
+                   
+               
+                    <?php
+                    
+                    foreach($result as $row) {
+                        
+                    ?>
+					<tr> 
+					<td><?php echo $row['documento_identidad'] ?></td>
+						<td><?php echo $row['nombre'] ?></td>
+						<td><?php echo $row['apellido'] ?></td>
+						<td><input type="checkbox" name="voto[]"></td>
+            		<?php 
+                              }
+                            ?>
+            				</tbody>
+            			</table>
+            				<?php echo $this->pagination->create_links() ?>
+                             <div class="small-12 column text-right buttonPanel">
+                                <input id="btnEnviar" class="button small right" value="Cambiar Estatus" type="submit">
+                            </div>            			
+		</form>
+      
             <h3>Registrar Errores</h3>
     			<div class="large-12 medium-4 columns">
                     <label>Buscar Error</label>

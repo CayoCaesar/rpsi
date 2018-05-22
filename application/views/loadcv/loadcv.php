@@ -73,9 +73,11 @@
                   			</tr>
                 		</thead>
                 		<tbody>
+                		
                         <?php 
-                            foreach ($results as $data) { 
-                            ?>
+                        if(is_array($results))
+                        foreach ($results as $data) { 
+                        ?>
                                 <tr>
                                 
                                     <!--td>

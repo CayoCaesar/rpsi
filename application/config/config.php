@@ -23,9 +23,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-
-$config['base_url'] = 'http://localhost/rpsi/';
-//$config['base_url'] = 'http://10.100.4.41/rpsi2';
+//$config['base_url'] = 'http://localhost/loginmenu/';
+$config['base_url'] = 'http://localhost/rpsi';
 
 /*
 |--------------------------------------------------------------------------

@@ -28,6 +28,9 @@ class Voting_machine extends CI_Controller
             }
         }
         
+        $this->load->library('pagination');
+        $this->load->helper('url');
+        
         // Load form helper library
         $this->load->helper('form');
         
@@ -43,13 +46,16 @@ class Voting_machine extends CI_Controller
         $this->load->model('Proceso_model');
         $this->load->model('Fase_model');
         $this->load->model('UsuarioMaquina_model');
+        $this->load->model('User_model');
         $data = new stdClass();
     }
 
     // Show login page
     public function index()
     {
-        $data = new stdClass();
+      
+           $data = new stdClass();
+        
         
         if ($this->UsuarioMaquina_model->getCountUsuario($_SESSION['id']) > 0) {
             $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
@@ -69,6 +75,12 @@ class Voting_machine extends CI_Controller
             $this->load->view('templates/navigation', $data);
             $this->load->view('test/search_voting_machine');
             $this->load->view('templates/footer');
+            
+            // use the settings to initialize the library
+            $this->pagination->initialize($settings);
+            
+            // build paging links
+            $params["links"] = $this->pagination->create_links();
         }
     }
 
@@ -146,11 +158,34 @@ class Voting_machine extends CI_Controller
         }
     }
 
+  
+    
     public function seleccionada()
     {
+        //echo("<script>console.log('PHP: ".json_encode($data['result'])."');</script>");
+        
         $data = $this->data;
         $data = new stdClass();
         
+        $pages=10;
+        $this->load->library('pagination');//Cargamos la librería de paginación
+        $config['base_url'] = 'http://localhost/rpsi/index.php/voting_machine/seleccionada/';
+        $config['total_rows'] = $this->user_model->filas();//calcula el número de filas
+        echo("<script>console.log('PHP: ".json_encode($config['total_rows'])."');</script>");
+        $config['per_page'] = $pages; //Número de registros mostrados por páginas
+        $config['num_links'] = 5; //Número de links mostrados en la paginación
+        $config['first_link'] = 'Primera';//primer link
+        $config['last_link'] = '&Uacute;ltima';//último link
+        $config['next_link'] = 'Siguiente';//siguiente link
+        $config['prev_link'] = 'Anterior';//anterior link
+        $config["uri_segment"] = 3;//el segmento de la paginación
+        
+        $data->result = $this->User_model->total_paginados($config['per_page'],$this->uri->segment(3));
+        $this->pagination->initialize($config); //inicializamos la paginación
+        
+        echo("<script>console.log('PHP: ".json_encode($data->result)."hft');</script>");
+        
+        //$data->result = $this->user_model->getempleado();
         $idmaquina = $this->input->post('id');
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
         $data->errormv = $this->Error_model->getError();
@@ -160,6 +195,8 @@ class Voting_machine extends CI_Controller
         $usuariomaquina = array();
         $usuariomaquina["id_usuario"] = $_SESSION['id'];
         $usuariomaquina["id_maquina"] = $fila[0]->id;
+       
+        
         
         if ($this->UsuarioMaquina_model->getmaquina($usuariomaquina) > 0) {
             $data = new stdClass();
@@ -176,7 +213,9 @@ class Voting_machine extends CI_Controller
             $this->load->view('templates/navigation',$this->data);
             $this->load->view('test/test_voting_machine', $data);
             $this->load->view('templates/footer');
+            
         }
+        
     }
 
     public function resettest()

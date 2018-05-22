@@ -56,9 +56,11 @@ class User extends CI_Controller
         $data = new stdClass();
         
         // set validation rules
-        $this->form_validation->set_rules('username', 'Usuario', 'required|valid_email', array(
-            'required' => 'El Campo Usuario es requerido',
-            'valid_email' => 'El Campo Usuario de ser su correo electronico'
+        $this->form_validation->set_rules('documento_identidad', 'documento_identidad', 'trim|required|numeric|min_length[5]|max_length[9]', array(
+            'required' => 'El Campo Cedula es requerido',
+            'numeric' => 'El Campo Cedula solo permite numeros',
+            'min_length' => 'El Campo Cedula debe indicar al menos 5 digitos',
+            'max_length' => 'El Campo Cedula debe indicar maximo 9 digitos'
         ));
         $this->form_validation->set_rules('password', 'Clave', 'required', array(
             'required' => 'El Campo Clave es requerido'
@@ -84,20 +86,20 @@ class User extends CI_Controller
             
             // validation not ok, send validation errors to the view
             $this->load->view('templates/header');
-            $this->load->view('templates/navigation');
+            $this->load->view('templates/Navigation');
             $this->load->view('user/login/login');
             $this->load->view('templates/footer');
         } else {
             
             // set variables from the form
-            $username = $this->input->post('username');
+            $user = $this->input->post('documento_identidad');
             $password = $this->input->post('password');
             $meson = $this->input->post('numero_meson');
             
-            if ($this->user_model->resolve_user_login($username, $password, $meson)) {
+            if ($this->user_model->resolve_user_login($user, $password, $meson)) {
                 
                 // consultamos los datos del usuario
-                $user_id = $this->user_model->get_user_id_from_username($username);
+                $user_id = $this->user_model->get_user_id_from_username($user);
                 $user = $this->user_model->get_user($user_id);
                 
                 // si esta activo
@@ -109,7 +111,7 @@ class User extends CI_Controller
                     
                     // set session user datas
                     $_SESSION['id'] = (int) $user->id;
-                    $_SESSION['email'] = (string) $user->email;
+                    $_SESSION['documento_identidad'] = (string) $user->documento_identidad;
                     $_SESSION['id_rol'] = (int) $user->id_rol;
                     $_SESSION['id_empleado'] = (int) $user->id_empleado;
                     $_SESSION['estatus'] = (string) $user->estatus;
@@ -120,7 +122,23 @@ class User extends CI_Controller
                     // user login ok
                     redirect(base_url());
                 } else if ($user->estatus == "nuevo") {
-                    $this->resetpassword($user->id);
+                    
+                    // tmb se deben borrar estas dolineas si se desea restituir el reseteo automatico
+                    $this->load->model('Menu_model');
+                    $menu = $this->Menu_model->get_menu($user->id_rol);
+                    
+                    //esto se borra si se desea poner el reset password
+                    $_SESSION['id'] = (int) $user->id;
+                    $_SESSION['documento_identidad'] = (string) $user->documento_identidad;
+                    $_SESSION['id_rol'] = (int) $user->id_rol;
+                    $_SESSION['id_empleado'] = (int) $user->id_empleado;
+                    $_SESSION['estatus'] = (string) $user->estatus;
+                    $_SESSION['nombre'] = (string) $user->nombre;
+                    $_SESSION['apellido'] = (string) $user->apellido;
+                    $_SESSION['logged_in'] = (bool) true;
+                    $_SESSION['menu'] = (array) $menu;
+                    redirect(base_url());
+                    //$this->resetpassword($user->id);  se qita reseteo de password
                 }
             } else {
                 

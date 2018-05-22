@@ -19,8 +19,29 @@ class User_model extends CI_Model {
         parent::__construct();
         $this->load->database();
         
+        
     }
     
+    //obtenemos el total de filas para hacer la paginación
+    public function filas()
+    {
+        $consulta = $this->db->get('empleado');
+        return  $consulta->num_rows() ;
+    }
+    
+    //obtenemos todas las provincias a paginar con la función
+    //total_posts_paginados pasando la cantidad por página y el segmento
+    //como parámetros de la misma
+    public function total_paginados($por_pagina, $segmento)
+    {
+        $consulta = $this->db->get('empleado', $por_pagina, $segmento);
+        if($consulta->num_rows()>0)
+        {   
+            echo("<script>console.log('PHP: ".json_encode($consulta)."agggggggggggggggggggggggggggggggg');</script>");
+            return $consulta->result_array();
+        }
+        
+    }
     /**
      * create_user function.
      *
@@ -77,22 +98,23 @@ class User_model extends CI_Model {
      * @param mixed $password
      * @return bool true on success, false on failure
      */
-    public function resolve_user_login($email, $clave, $meson) {
+    public function resolve_user_login($user, $clave, $meson) {
         
-        $this->db->select('clave');
-        $this->db->from('usuario');
-        $this->db->where('correo', $email);
+        $this->db->select('u.clave');
+        $this->db->from('usuario u');
+        $this->db->where('documento_identidad', $user);
+        $this->db->join('empleado e', 'e.id = u.id_empleado', 'inner');
+        
         $this->db->where_in('estatus',array('nuevo', 'activo'));
         $hash = $this->db->get()->row('clave');
         
         if ($this->verify_password_hash($clave, $hash)){
             $this->db->set("meson",$meson);
             $this->db->set("fecha_hora_ultima_conexion",date('Y-m-d H:i:s'));
-            $this->db->where('correo', $email);
+            $this->db->where('id_empleado', $user_id);
             $this->db->update('usuario');
             
-            
-            
+           
             
             return true;
         }else{
@@ -110,11 +132,11 @@ class User_model extends CI_Model {
      * @param mixed $username
      * @return int the user id
      */
-    public function get_user_id_from_username($email) {
+    public function get_user_id_from_username($cedula) {
         
         $this->db->select('id');
-        $this->db->from('usuario');
-        $this->db->where('correo', $email);
+        $this->db->from('empleado');
+        $this->db->where('documento_identidad', $cedula);
         
         return $this->db->get()->row('id');
         
@@ -205,7 +227,7 @@ class User_model extends CI_Model {
             //usuario
         if ($reset){
             $this->db->set("clave", password_hash("Abcd1234++", PASSWORD_BCRYPT));
-            $this->db->set("estatus", "nuevo");
+            $this->db->set("estatus", "activo");
         }
            
             $this->db->set("correo", $user["correo"]);
@@ -250,4 +272,13 @@ class User_model extends CI_Model {
         
     }
     
-}
+    public function getempleado(){
+        $query = $this->db->get('empleado',10);
+       
+        return $query->result_array();
+        
+    }
+        
+    }
+    
+

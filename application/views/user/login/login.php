@@ -9,8 +9,8 @@
 			</div>
 			<?= form_open() ?>
 				<div class="large-4 medium-4 columns">
-					<label for="username"><span style="color:red;">*</span>Usuario</label>
-					<input type="text" class="form-control" id="username" name="username" placeholder="Usuario">
+					<label for="documento_identidad"><span style="color:red;">*</span>Cedula</label>
+					<input type="text" class="form-control" id="documento_identidad" name="documento_identidad" placeholder="C&eacute;dula" onkeypress="return validar_texto(event)" maxlength="9">
 				</div>
 				
 				<div class="large-4 medium-4 columns">
