@@ -7,7 +7,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @extends CI_Model
  */
 class User_model extends CI_Model {
-    
     /**
      * __construct function.
      *
@@ -15,33 +14,31 @@ class User_model extends CI_Model {
      * @return void
      */
     public function __construct() {
-        
         parent::__construct();
         $this->load->database();
-        
-        
     }
-    
-    //obtenemos el total de filas para hacer la paginación
-    public function filas()
+
+    public function get_current_page_records($limit, $start)
     {
-        $consulta = $this->db->get('empleado');
-        return  $consulta->num_rows() ;
-    }
-    
-    //obtenemos todas las provincias a paginar con la función
-    //total_posts_paginados pasando la cantidad por página y el segmento
-    //como parámetros de la misma
-    public function total_paginados($por_pagina, $segmento)
-    {
-        $consulta = $this->db->get('empleado', $por_pagina, $segmento);
-        if($consulta->num_rows()>0)
-        {   
-            echo("<script>console.log('PHP: ".json_encode($consulta)."agggggggggggggggggggggggggggggggg');</script>");
-            return $consulta->result_array();
+        $this->db->limit($limit, $start);
+        $query = $this->db->get("empleado");
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                $data[] = $row;
+            }
+            return $data;
         }
-        
+        return false;
     }
+
+    public function get_total()
+    {
+        return $this->db->count_all("empleado");
+    }
+
     /**
      * create_user function.
      *
@@ -113,16 +110,11 @@ class User_model extends CI_Model {
             $this->db->set("fecha_hora_ultima_conexion",date('Y-m-d H:i:s'));
             $this->db->where('id_empleado', $user_id);
             $this->db->update('usuario');
-            
-           
-            
             return true;
         }else{
             return false;
         }
-        
        // return $this->verify_password_hash($clave, $hash);
-        
     }
     
     /**
@@ -133,13 +125,10 @@ class User_model extends CI_Model {
      * @return int the user id
      */
     public function get_user_id_from_username($cedula) {
-        
         $this->db->select('id');
         $this->db->from('empleado');
         $this->db->where('documento_identidad', $cedula);
-        
         return $this->db->get()->row('id');
-        
     }
     
     /**
@@ -160,7 +149,6 @@ class User_model extends CI_Model {
         $this->db->join('empleado e', 'e.id = u.id_empleado');
         $this->db->where('u.id',$user_id);
         return $this->db->get()->row();
-        
     }
     
     public function get_user_from_documento($document) {
@@ -174,13 +162,11 @@ class User_model extends CI_Model {
         $this->db->join('usuario u', 'u.id_empleado = e.id');
         $this->db->where('e.documento_identidad',$document);
         $this->db->where_in('u.estatus',array('nuevo', 'activo'));
-        
-        
+
         $query = $this->db->get()->row();
         log_message('info', 'User_model|get_user_from_documento '.$sql = $this->db->last_query());
         log_message('info', 'User_model|get_user_from_documento fin ');
         return $query;
-        
     }
     
     /**
@@ -191,9 +177,7 @@ class User_model extends CI_Model {
      * @return string|bool could be a string on success, or bool false on failure
      */
     private function hash_password($password) {
-        
         return password_hash($password, PASSWORD_BCRYPT);
-        
     }
     
     /**
@@ -205,15 +189,10 @@ class User_model extends CI_Model {
      * @return bool
      */
     private function verify_password_hash($password, $hash) {
-        
         return password_verify($password, $hash);
-        
     }
     
-    
     public function edit_user($user, $employee, $delecte, $reset){
-        
-        
         //$this->db->trans_start();
         //$this->db->trans_complete();
         $this->db->trans_start();
@@ -223,8 +202,7 @@ class User_model extends CI_Model {
             $this->db->set("clave", password_hash("Abcd1234++", PASSWORD_BCRYPT));
             $this->db->set("estatus", "nuevo");
         }
-            
-            //usuario
+        //usuario
         if ($reset){
             $this->db->set("clave", password_hash("Abcd1234++", PASSWORD_BCRYPT));
             $this->db->set("estatus", "activo");
@@ -268,17 +246,9 @@ class User_model extends CI_Model {
         }else{
             return true;
         }
-        
-        
+
     }
-    
-    public function getempleado(){
-        $query = $this->db->get('empleado',10);
-       
-        return $query->result_array();
-        
-    }
-        
+
     }
     
 

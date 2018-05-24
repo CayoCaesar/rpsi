@@ -204,14 +204,10 @@ class MaquinaVotacion_model extends CI_Model
                                         AND mv.id=" . $id );
         
         if ($result->num_rows()>0){
-            
             return $result;
-            
         }else {
-            
             return null;
         }
-        
     }
     
     public function getCodigoByStatusId($estatus,$id){
