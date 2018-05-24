@@ -80,7 +80,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div> 
 
         <br>
-                    <?php if (!$finalizado){?>
+                    <?php if( $fila[0]->id_estatus_maquina == 3){?>
                     	<h3>Cedulas Asociadas a esta Maquina</h3>
             			<br>
             			<form method="POST" action="">

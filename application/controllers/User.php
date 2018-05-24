@@ -56,11 +56,11 @@ class User extends CI_Controller
         $data = new stdClass();
         
         // set validation rules
-        $this->form_validation->set_rules('documento_identidad', 'documento_identidad', 'trim|required|numeric|min_length[5]|max_length[9]', array(
-            'required' => 'El Campo Cedula es requerido',
-            'numeric' => 'El Campo Cedula solo permite numeros',
-            'min_length' => 'El Campo Cedula debe indicar al menos 5 digitos',
-            'max_length' => 'El Campo Cedula debe indicar maximo 9 digitos'
+        $this->form_validation->set_rules('ingreso', 'ingreso', 'trim|required|alpha_numeric|min_length[5]|max_length[15]', array(
+            'required' => 'El Campo Usuario es requerido',
+            'alpha_numeric' => 'El Campo Usuario solo permite datos alfanum&acutericos',
+            'min_length' => 'El Campo Usuario debe indicar al menos 5 digitos',
+            'max_length' => 'El Campo Usuario debe indicar maximo 15 digitos'
         ));
         $this->form_validation->set_rules('password', 'Clave', 'required', array(
             'required' => 'El Campo Clave es requerido'
@@ -92,7 +92,7 @@ class User extends CI_Controller
         } else {
             
             // set variables from the form
-            $user = $this->input->post('documento_identidad');
+            $user = $this->input->post('ingreso');
             $password = $this->input->post('password');
             $meson = $this->input->post('numero_meson');
             

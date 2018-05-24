@@ -23,7 +23,7 @@ class Paging extends CI_Controller {
  
         // init params
         $params = array();
-        $limit_per_page = 1;
+        $limit_per_page = 10;
         $start_index = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
         $total_records = $this->Users_model->get_total();
  
@@ -35,14 +35,16 @@ class Paging extends CI_Controller {
             $config['total_rows'] = $total_records;
             $config['per_page'] = $limit_per_page;
             $config["uri_segment"] = 3;
-             
+            $config['base_url'] = base_url() . 'index.php/paging/index';
+            $config['num_links'] = 4;
+            
             $this->pagination->initialize($config);
              
             // build paging links
             $params["links"] = $this->pagination->create_links();
         }
         $this->load->view('templates/header');
-        $this->load->view('templates/navigation',$this->data);
+        $this->load->view('templates/navigation');
         $this->load->view('test/user_listing', $params);
         $this->load->view('templates/footer');
     }

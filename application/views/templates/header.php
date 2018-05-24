@@ -21,7 +21,7 @@
                             }
                                 
                             // Patron de entrada, en este caso solo acepta numeros
-                            patron =/[0-9]/;
+                            patron =/[A-Za-z0-9]/;
                             
                             tecla_final = String.fromCharCode(tecla);
                             

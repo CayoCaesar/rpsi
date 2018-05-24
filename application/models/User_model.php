@@ -98,12 +98,11 @@ class User_model extends CI_Model {
      * @param mixed $password
      * @return bool true on success, false on failure
      */
-    public function resolve_user_login($user, $clave, $meson) {
+    public function resolve_user_login($ingreso, $clave, $meson) {
         
         $this->db->select('u.clave');
         $this->db->from('usuario u');
-        $this->db->where('documento_identidad', $user);
-        $this->db->join('empleado e', 'e.id = u.id_empleado', 'inner');
+        $this->db->where('ingreso', $ingreso);
         
         $this->db->where_in('estatus',array('nuevo', 'activo'));
         $hash = $this->db->get()->row('clave');
@@ -132,11 +131,11 @@ class User_model extends CI_Model {
      * @param mixed $username
      * @return int the user id
      */
-    public function get_user_id_from_username($cedula) {
+    public function get_user_id_from_username($ingreso) {
         
         $this->db->select('id');
-        $this->db->from('empleado');
-        $this->db->where('documento_identidad', $cedula);
+        $this->db->from('usuario');
+        $this->db->where('ingreso', $ingreso);
         
         return $this->db->get()->row('id');
         

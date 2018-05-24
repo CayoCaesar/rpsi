@@ -76,11 +76,7 @@ class Voting_machine extends CI_Controller
             $this->load->view('test/search_voting_machine');
             $this->load->view('templates/footer');
             
-            // use the settings to initialize the library
-            $this->pagination->initialize($settings);
-            
-            // build paging links
-            $params["links"] = $this->pagination->create_links();
+         
         }
     }
 
@@ -183,11 +179,12 @@ class Voting_machine extends CI_Controller
         $data->result = $this->User_model->total_paginados($config['per_page'],$this->uri->segment(3));
         $this->pagination->initialize($config); //inicializamos la paginación
         
-        echo("<script>console.log('PHP: ".json_encode($data->result)."hft');</script>");
+      //  echo("<script>console.log('PHP: ".json_encode($data->result)."hft');</script>");
         
         //$data->result = $this->user_model->getempleado();
         $idmaquina = $this->input->post('id');
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
+        
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
         

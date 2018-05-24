@@ -15,12 +15,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <tr>
                         <th>ID</th>
                         <th>NAME</th>
+                        <th>Apellidos</th>
+                        
                     </tr>
                      
                     <?php foreach ($results as $data) { ?>
                         <tr>
                             <td><?php echo $data->id ?></td>
-                            <td><?php echo $data->documento_identidad ?></td>
+                            <td><?php echo $data->nombre ?></td>
+                             <td><?php echo $data->apellido ?></td>
                         </tr>
                     <?php } ?>
                 </table>
