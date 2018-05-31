@@ -103,7 +103,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <td><?php echo $row -> documento_identidad ?></td>
                             <td><?php echo $row -> nombre ?></td>
                             <td><?php echo $row -> apellido ?></td>
-                            <td><input type="checkbox" name="voto[]"></td>
+                            <td><input type="checkbox" name="voto[] value="<?php echo set_value($row -> voto); ?>"></td>
                         </tr>
                     <?php
                             }

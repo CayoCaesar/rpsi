@@ -24,10 +24,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                <div class="large-4 medium-4 columns">
                     <label>Estatus</label>
                     <input type="text" placeholder="" name="estatus" id="estatus" disabled value="<?= $fila[0]->estatus; ?>"/>
-                </div> 
-              
-                    <input type="hidden"  name="id" id="id"  value="<?= $fila[0]->id; ?>"/>
+                </div>
 
+               <input type="hidden"  name="id" id="id"  value="<?= $fila[0]->id; ?>"/>
 
             <div class="small-12 column text-right buttonPanel">
             	<?php if ($fila[0]->id_estatus_maquina == "6"){?>
