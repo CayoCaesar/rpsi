@@ -65,20 +65,67 @@ class audit extends CI_Controller{
             'min_length' => 'La mesa debe indicar al menos 1 digitos',
             'max_length' => 'La mesa debe indicar m&aacute;ximo 2 digitos'
         ));
-
+        if ($this->form_validation->run() == FALSE) {
             
             $this->load->view('templates/header');
             $this->load->view('templates/navigation');
-            $this->load->view('audit/audit');
+            $this->load->view('audit/audit_consultar');
             $this->load->view('templates/footer');
-     
+        } else {
+            
+            $centrovotacionmesa = $this->input->post('codigo_centrovotacionmesa');
+            echo("<script>console.log('centrovotacionmesa: ".json_encode($centrovotacionmesa)."');</script>");
+            
+            
+       
+                
+                $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+                echo("<script>console.log('maquina de votación: ".json_encode($result->result())."');</script>");
+                $dataVotingMachine = array(
+                    'consulta' => $result
+                );
+                
+                /**
+                 * $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+                 
+                 if ($result != null) {
+                 $dataVotingMachine = $result->result();
+                 $dataVotingMachine[0]->id;
+                 */
+                
+                if ($result != null) {
+                    $fila=$result->result();
+                     }
+                                             
+        }
     }
     
     public function consultada()
     {
 
         $data = new stdClass();
-        //$idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
+        if ($this->UsuarioMaquina_model->getCountUsuario($_SESSION['id']) > 0) {
+            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
+            $result = $this->MaquinaVotacion_model->getDetailVotingMachinebById($idmaquina);
+            $dataVotingMachine = array(
+                'consulta' => $result
+            );
+            if ($result != null) {
+                $this->load->view('templates/header');
+                $this->load->view('templates/navigation', $data);
+                $this->load->view('audit/audit_detail', $dataVotingMachine);
+            }
+        } else {
+            $data = $this->data;
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation', $data);
+            $this->load->view('audit/audit_consultar');
+            $this->load->view('templates/footer');
+        }
+    
+        
+    
+       /* //$idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
         $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
         echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
         $data->result = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
@@ -86,16 +133,11 @@ class audit extends CI_Controller{
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
         
-        $fila = $data->result->result();
+        $fila= $data->result->result();
         $usuariomaquina = array();
         $usuariomaquina["id_usuario"] = $_SESSION['id'];
-        $usuariomaquina["id_maquina"] = $fila[0]->id;
-        
-     
-        $this->load->view('templates/header');
-        $this->load->view('templates/navigation');
-        $this->load->view('audit/audit_detail', $data);
-        $this->load->view('templates/footer');
+        $usuariomaquina["id_maquina"] = $fila[0]->id;*/
+      
     }
   
     

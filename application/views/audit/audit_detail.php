@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="row">
     	<h3> M&aacute;quina de Votaci&oacute;n Elegida para Auditor&iacute;a</h3>
     
-        <?php $fila=$result->result(); $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion ?>
+        <?php $fila=$consulta->result(); $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion ?>
 
                 <div class="large-12 medium-4 columns">
                     <label>Centro de votaci&oacute;n</label>
