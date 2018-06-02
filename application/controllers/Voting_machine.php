@@ -99,6 +99,7 @@ class Voting_machine extends CI_Controller
         } else {
             
             $centrovotacionmesa = $this->input->post('codigo_centrovotacionmesa');
+            echo("<script>console.log('centrovotacionmesa: ".json_encode($centrovotacionmesa)."');</script>");
             
             $campos = explode(".", $centrovotacionmesa);
             
@@ -107,6 +108,7 @@ class Voting_machine extends CI_Controller
                 $mesa = $campos[1];
                 
                 $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+                echo("<script>console.log('maquina de votación: ".json_encode($result->result())."');</script>");
                 $dataVotingMachine = array(
                     'consulta' => $result
                 );
@@ -130,6 +132,7 @@ class Voting_machine extends CI_Controller
                         $this->load->view('test/detail_voting_machine',$dataVotingMachine);
                         $this->load->view('templates/footer');
                     }else{
+                        echo("<script>console.log('aquiiiiiiiiiiiiiiiiiiiiiii');</script>");
                         $this->load->view('templates/header');
                         $this->load->view('templates/navigation');
                         $this->load->view('test/detail_voting_machine', $dataVotingMachine);
@@ -154,12 +157,21 @@ class Voting_machine extends CI_Controller
 
     public function seleccionada()
     {
+        //echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
         $data = $this->data;
         $data = new stdClass();
-        //$idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
-        $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
-        echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
+
+        if ($this->input->post('id') != null) {
+            $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
+        } else {
+            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
+        }
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
+
+        // obtenemos el centro y mesa de votacion
+        $query=$data->consulta->result_array();
+        $centro_votacion = $query[0]['codigo_centrovotacion'];
+        $mesa = $query[0]['mesa'];
         
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
@@ -172,17 +184,13 @@ class Voting_machine extends CI_Controller
         if ($fila[0]->id_estatus_maquina == "3") {
             // init params
             $params = array();
-            $limit_per_page = 5;
+            $limit_per_page = 10;
             $start_index = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
-            $total_records = $this->User_model->get_total();
-
+            $total_records = $this->User_model->get_total($centro_votacion, $mesa);
             if ($total_records > 0)
             {
                 // get current page records
-                $data->votantes = $this->User_model->get_current_page_records($limit_per_page, $start_index);
-                $sql = $this->db->last_query();
-                echo("<script>console.log('PHP: ".json_encode($data->votantes)."');</script>");
-                echo("<script>console.log('SQL: ".json_encode($sql)."');</script>");
+                $data->votantes = $this->User_model->get_current_page_records($limit_per_page, $start_index, $centro_votacion, $mesa);
                 $config['base_url'] = base_url() . 'index.php/voting_machine/seleccionada';
                 $config['total_rows'] = $total_records;
                 $config['per_page'] = $limit_per_page;
@@ -208,6 +216,37 @@ class Voting_machine extends CI_Controller
         $this->load->view('templates/navigation',$this->data);
         $this->load->view('test/test_voting_machine', $data);
         $this->load->view('templates/footer');
+    }
+
+    public function change_votes() {
+        $data = $this->data;
+        $data = new stdClass();
+
+        $votante_id = $this->input->post('voto');
+        $votante_estatus = $this->input->post('estatus');
+
+        if ($votante_estatus == 'true') {
+            $votante_estatus = 1;
+        } else if ($votante_estatus == 'false') {
+            $votante_estatus = 0;
+        }
+
+        $data = array(
+            'table_name' => 'votantes', // pass the real table name
+            'id' => $votante_id,
+            'voto' => $votante_estatus
+        );
+
+        if($this->User_model->upddata($data)) // call the method from the model
+        {
+            // update successful
+            echo("<script>console.log('update successful');</script>");
+        }
+        else
+        {
+            // update not successful
+            echo("<script>console.log('update not successful');</script>");
+        }
     }
 
     public function resettest()

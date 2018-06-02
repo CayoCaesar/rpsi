@@ -18,11 +18,14 @@ class User_model extends CI_Model {
         $this->load->database();
     }
 
-    public function get_current_page_records($limit, $start)
+    public function get_current_page_records($limit, $start, $centro_votacion, $mesa)
     {
+        $this->db->SELECT ('*');
+        $this->db->FROM('votantes');
+        $this->db->WHERE('codigo_centrovotacion', $centro_votacion);
+        $this->db->WHERE('mesa', $mesa);
         $this->db->limit($limit, $start);
-        $query = $this->db->get("empleado");
-
+        $query = $this->db->get();
         if ($query->num_rows() > 0)
         {
             foreach ($query->result() as $row)
@@ -34,11 +37,32 @@ class User_model extends CI_Model {
         return false;
     }
 
-    public function get_total()
+    public function get_total($centro_votacion, $mesa)
     {
-        return $this->db->count_all("empleado");
+        $this->db->SELECT ('COUNT(*)');
+        $this->db->FROM('votantes');
+        $this->db->WHERE('codigo_centrovotacion', $centro_votacion);
+        $this->db->WHERE('mesa', $mesa);
+        $query = $this->db->get();
+        foreach ($query->row() as $row)
+        {
+            $result = $row;
+        }
+        return $result;
+        //return $this->db->count_all("votantes");
     }
 
+    public function getInfoVotante($id) {
+        $query = $this->db->get_where('votantes', array('id' => $id));
+        return $query;
+    }
+
+    public function upddata($data) {
+        extract($data);
+        $this->db->where('id', $id);
+        $this->db->update($table_name, array('voto' => $voto));
+        return true;
+    }
     /**
      * create_user function.
      *

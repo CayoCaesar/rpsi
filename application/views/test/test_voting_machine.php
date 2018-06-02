@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
+
 <h2 class="show-for-small-only"></h2>
 <br>
 <div class="container">
@@ -35,6 +36,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
 
         <h3>M&aacute;quina de Votaci&oacute;n. Fase <?=$proxEstatus?></h3>
+
         <?= form_open('/voting_machine/procesar') ?>
         <input type="hidden" value="<?= $fila[0]->id; ?>" id="id" name = "id">
         <input type="hidden" value="<?= $fila[0]->estatus; ?>" id="estatusmv" name = "estatusmv">
@@ -80,44 +82,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
 
         <br>
-        <?php if ($fila[0]->id_estatus_maquina == "3"){?>
+        <?php if ($fila[0]->id_estatus_maquina == "3") { ?>
             <h3>Cedulas Asociadas a esta Maquina</h3>
             <br>
-            <form method="POST" action="">
-
-                <table id="dataTable">
-                    <thead>
-                    <tr>
-                        <td>Cedulas</td>
-                        <td>Nombre</td>
-                        <td>Apellido</td>
-                        <td>Estatus Votaci&oacute;n</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                        if (isset($votantes)) {
-                            foreach($votantes as $row) {
-                    ?>
+            <table id="dataTable">
+                <thead>
+                <tr>
+                    <td>Cedulas</td>
+                    <td>Nombre</td>
+                    <td>Apellido</td>
+                    <td>Estatus Votaci&oacute;n</td>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if (isset($votantes)) {
+                    foreach($votantes as $row) {
+                        ?>
                         <tr>
-                            <td><?php echo $row -> documento_identidad ?></td>
-                            <td><?php echo $row -> nombre ?></td>
-                            <td><?php echo $row -> apellido ?></td>
-                            <td><input type="checkbox" name="voto[]"></td>
+                            <td><?php echo $row->documento_identidad ?></td>
+                            <td><?php echo $row->nombre ?></td>
+                            <td><?php echo $row->apellido ?></td>
+                            <td>
+                                <?php if ($row->voto == 1){ ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' checked /> <?php echo $row->id ?>
+                                <?php } else if ($row->voto == 0) { ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' /> <?php echo $row->id ?>
+                                <?php } ?>
+                            </td>
                         </tr>
-                    <?php
-                            }
-                        }
-                    ?>
-                    </tbody>
-                </table>
-                <?php if (isset($links)) { ?>
-                    <?php echo $links ?>
-                <?php } ?>
-                <div class="small-12 column text-right buttonPanel">
-                    <input id="btnEnviar" class="button small right" value="Cambiar Estatus" type="submit">
-                </div>
-            </form>
+                        <?php
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+            <?php if (isset($links)) { ?>
+                <?php echo $links ?>
+            <?php } ?>
 
             <h3>Registrar Errores</h3>
             <div class="large-12 medium-4 columns">
@@ -164,6 +166,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         <?php }?>
         <?= form_close() ?>
+        <script>
+            let checkboxes = document.getElementsByName('voto');
+            for(let index in checkboxes) {
+                checkboxes[index].onchange = updateFunc;
+            }
+            function updateFunc() {
+                PostToServer(this.value, this.checked);
+            }
+        </script>
 
     </div>
 </div>

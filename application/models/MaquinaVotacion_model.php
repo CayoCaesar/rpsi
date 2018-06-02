@@ -292,10 +292,9 @@ class MaquinaVotacion_model extends CI_Model
     public function getCountModeloEstatus(){
         
         $result=$this->db->query("SELECT mv.modelo_maquina, em.descripcion estatus, COUNT(*) cantidad
-                            FROM maquina_votacion mv, estatus_maquina em
-                            WHERE em.id = mv.id_estatus_maquina
-                            GROUP BY mv.id_estatus_maquina,mv.modelo_maquina");
-        
+                                FROM maquina_votacion mv, estatus_maquina em
+                                WHERE em.id = mv.id_estatus_maquina
+                                GROUP BY mv.id_estatus_maquina,mv.modelo_maquina");
         if ($result->num_rows()>0){
             
             return $result;
