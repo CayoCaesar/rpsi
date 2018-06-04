@@ -99,7 +99,6 @@ class Voting_machine extends CI_Controller
         } else {
             
             $centrovotacionmesa = $this->input->post('codigo_centrovotacionmesa');
-            echo("<script>console.log('centrovotacionmesa: ".json_encode($centrovotacionmesa)."');</script>");
             
             $campos = explode(".", $centrovotacionmesa);
             
@@ -108,7 +107,6 @@ class Voting_machine extends CI_Controller
                 $mesa = $campos[1];
                 
                 $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
-                echo("<script>console.log('maquina de votación: ".json_encode($result->result())."');</script>");
                 $dataVotingMachine = array(
                     'consulta' => $result
                 );
@@ -124,7 +122,7 @@ class Voting_machine extends CI_Controller
                 if ($result != null) {
                     $fila=$result->result();
                     
-                    //sila máquina se encuentra  en estatus transmitida. Mostramos emnsaje.
+                    //sila máquina se encuentra  en estatus transmitida. Mostramos mensaje.
                     if($result != null && $fila[0]->id_estatus_maquina == "6"){
                         $data->success = "La m&aacute;quina seleccionada se encuentra Transmitida. Si desea reiniciar el proceso solicite que se reinicie la m&aacute;quin.";
                         $this->load->view('templates/header');
@@ -132,7 +130,6 @@ class Voting_machine extends CI_Controller
                         $this->load->view('test/detail_voting_machine',$dataVotingMachine);
                         $this->load->view('templates/footer');
                     }else{
-                        echo("<script>console.log('aquiiiiiiiiiiiiiiiiiiiiiii');</script>");
                         $this->load->view('templates/header');
                         $this->load->view('templates/navigation');
                         $this->load->view('test/detail_voting_machine', $dataVotingMachine);
