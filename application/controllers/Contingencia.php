@@ -80,9 +80,6 @@ class Contingencia extends CI_Controller
             $centrovotacion = $this->input->post('codigo_centrovotacion');
             $mesa = $this->input->post('mesa');
 
-            echo "<script>console.log( 'centro votación: " . $centrovotacion . "' );</script>";
-            echo "<script>console.log( 'mesa: " . $mesa . "' );</script>";
-
             $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
             $maquina_votacion = $result->row();
             $id_maquina = $maquina_votacion->id;
@@ -94,8 +91,11 @@ class Contingencia extends CI_Controller
             );
 
             if ($result != null) {
+                if ($contingencia == NULL) {
+                    $data->error = "No hay reemplazos disponibles para está Máquina de Votación.";
+                }
                 $this->load->view('templates/header');
-                $this->load->view('templates/navigation');
+                $this->load->view('templates/navigation', $data);
                 $this->load->view('contingencia/detail_voting_machine', $dataVotingMachine);
                 $this->load->view('templates/footer');
             } else {
@@ -105,32 +105,25 @@ class Contingencia extends CI_Controller
                 $this->load->view('contingencia/search_voting_machine');
                 $this->load->view('templates/footer');
             }
-//
-//            if ($result != null) {
-//                log_message('info', 'Voting_machine|resettest|result null');
-//                $dataVotingMachine = $result->result();
-//                $dataVotingMachine[0]->id;
-//                $result = $this->MaquinaVotacion_model->resetVotingMachine($dataVotingMachine[0]->id, $seleccionada);
-//
-//                if ($result) {
-//                    $data->success = "Reiniciada Exitosamente";
-//                } else {
-//                    $data->error = "Error al Reiniciar M&aacute;quina Votaci&oacute;n";
-//                }
-//                $this->load->view('templates/header');
-//                $this->load->view('templates/navigation', $data);
-//                $this->load->view('test/reset_test_voting_machine');
-//            } else {
-//                log_message('info', 'Voting_machine|resettest|result else');
-//                $data->error = "No se encontr&oacute; el n&uacute;mero consultado.";
-//                $this->load->view('templates/header');
-//                $this->load->view('templates/navigation', $data);
-//                $this->load->view('test/reset_test_voting_machine');
-//                $this->load->view('templates/footer');
-//            }
         }
         log_message('info', 'Voting_machine|resettest|fin');
     }
+
+    public function liberar()
+    {
+        $data = new stdClass();
+        $reemplazos = $this->input->post('reemplazo');
+        $reemplazos_separado_por_comas = implode(",", $reemplazos);
+        $fechafin = date('Y-m-d H:i:s');
+        $result = $this->Contingencia_model->liberarReemplazos($reemplazos_separado_por_comas, $fechafin);
+        if ($result) {
+                $data->success = "Reemplazos liberados éxitosamente";
+        }
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation', $data);
+            $this->load->view('contingencia/search_voting_machine');
+            $this->load->view('templates/footer');
+        }
 
     public function cancelar()
     {

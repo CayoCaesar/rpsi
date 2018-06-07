@@ -17,7 +17,7 @@
                 <input type="text" maxlength="2" placeholder="1" name="mesa" id="mesa" onkeypress="return validar_numeros(event)" value="<?php echo set_value('mesa'); ?>" />
             </div>
             <div class="small-12 column text-right buttonPanel">
-                <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/contingencia/cancelar'">
+                <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>'">
                 <input id="btnEnviar" class="button small right" value="Consultar" type="submit">
             </div>
         <?= form_close() ?>

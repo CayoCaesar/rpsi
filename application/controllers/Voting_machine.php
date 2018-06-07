@@ -53,6 +53,7 @@ class Voting_machine extends CI_Controller
         $this->load->model('Fase_model');
         $this->load->model('UsuarioMaquina_model');
         $this->load->model('User_model');
+        $this->load->model('Contingencia_model');
         $data = new stdClass();
     }
 
@@ -122,7 +123,7 @@ class Voting_machine extends CI_Controller
                 if ($result != null) {
                     $fila=$result->result();
                     
-                    //sila máquina se encuentra  en estatus transmitida. Mostramos mensaje.
+                    //sila máquina se encuentra  en estatus transmitida. Mostramos emnsaje.
                     if($result != null && $fila[0]->id_estatus_maquina == "6"){
                         $data->success = "La m&aacute;quina seleccionada se encuentra Transmitida. Si desea reiniciar el proceso solicite que se reinicie la m&aacute;quin.";
                         $this->load->view('templates/header');
@@ -163,6 +164,16 @@ class Voting_machine extends CI_Controller
         } else {
             $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
         }
+
+        $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
+
+        if ($contingencia != null){
+            $data->stop_process = true;
+            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
+        }else {
+            $data->stop_process = false;
+        }
+
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
 
         // obtenemos el centro y mesa de votacion
@@ -210,7 +221,7 @@ class Voting_machine extends CI_Controller
             }
         }
         $this->load->view('templates/header');
-        $this->load->view('templates/navigation',$this->data);
+        $this->load->view('templates/navigation', $data);
         $this->load->view('test/test_voting_machine', $data);
         $this->load->view('templates/footer');
     }
@@ -331,6 +342,16 @@ class Voting_machine extends CI_Controller
         $reemplazo = false;
         $validation = true;
         $idmaquina = $this->input->post('id');
+
+        $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
+
+        if ($contingencia != null){
+            $data->stop_process = true;
+            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
+        }else {
+            $data->stop_process = false;
+        }
+
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
