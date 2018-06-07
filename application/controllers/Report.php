@@ -40,6 +40,7 @@ class Report extends CI_Controller
         }
         $this->load->model('MaquinaVotacion_model');
         $this->load->model('Error_model');
+        $this->load->model('Contingencia_model');
     }
 
     public function index()
@@ -110,4 +111,77 @@ class Report extends CI_Controller
         $this->load->view('report/report', $reports);
         $this->load->view('templates/footer');
     }
+
+    // Show index page
+    public function report_mv()
+    {
+        $this->load->view('templates/header');
+        $this->load->view('templates/navigation');
+        $this->load->view('report/search_voting_machine');
+        $this->load->view('templates/footer');
+    }
+
+    public function consulta_report_mv()
+    {
+        $data = new stdClass();
+        // validaciones de formulario
+        $this->form_validation->set_rules('codigo_centrovotacion', 'C&oacute;digo de centro de votaci&oacute;n', 'trim|required|xss_clean|numeric|exact_length[9]', array(
+            'required' => 'El centro de votaci&oacute;n es requerido',
+            'numeric' => 'El centro de votaci&oacute;n s&oacute;lo permite n&uacute;meros',
+            'exact_length' => 'El centro de votaci&oacute;n debe ser de 9 digitos'
+        ));
+        $this->form_validation->set_rules('mesa', 'Mesa', 'trim|required|xss_clean|numeric|min_length[1]|max_length[2]', array(
+            'required' => 'La mesa es requerida',
+            'numeric' => 'La mesa solo permite números',
+            'min_length' => 'La mesa debe indicar al menos 1 digitos',
+            'max_length' => 'La mesa debe indicar m&aacute;ximo 2 digitos'
+        ));
+
+        if ($this->form_validation->run() == FALSE) {
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation');
+            $this->load->view('report/search_voting_machine');
+            $this->load->view('templates/footer');
+        } else {
+
+            $centrovotacion = $this->input->post('codigo_centrovotacion');
+            $mesa = $this->input->post('mesa');
+
+            $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+            $maquina_votacion = $result->row();
+            $id_maquina = $maquina_votacion->id;
+            $contingencia = $this->Contingencia_model->getReemplazosByMv($id_maquina);
+            $errores = $this->Contingencia_model->getErrorsByMv($id_maquina);
+            $votantes = $this->Contingencia_model->getVotersByCentroMesa($centrovotacion, $mesa);
+            $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);
+
+            $prueba = $result->result();
+            //var_dump($prueba);
+
+            $dataVotingMachine = array(
+                'consulta' => $result,
+                'contingencia' => $contingencia,
+                'errors' => $errores,
+                'voters' => $votantes,
+                'user' => $operador
+            );
+
+            if ($result != null) {
+                if ($contingencia == NULL) {
+                    $data->error = "No hay reemplazos disponibles para está Máquina de Votación.";
+                }
+                $this->load->view('templates/header');
+                $this->load->view('templates/navigation', $data);
+                $this->load->view('report/detail_voting_machine', $dataVotingMachine);
+                $this->load->view('templates/footer');
+            } else {
+                $data->error = "No se encontrar&oacute;n los datos consultados.";
+                $this->load->view('templates/header');
+                $this->load->view('templates/navigation', $data);
+                $this->load->view('report/search_voting_machine');
+                $this->load->view('templates/footer');
+            }
+        }
+    }
+
 }

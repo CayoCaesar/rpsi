@@ -47,4 +47,40 @@ class Contingencia_model extends CI_Model
         return $result;
     }
 
+    public function getErrorsByMv($id_maquina) {
+        $result=$this->db->query("SELECT proceso_error.id, error.descripcion, maquina_votacion.id_estatus_maquina
+                                    FROM proceso_error
+                                    INNER JOIN error ON proceso_error.id_error = error.id
+                                    INNER JOIN proceso ON proceso_error.id_proceso = proceso.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
+                                    WHERE proceso.id_maquina_votacion = '56'");
+        if ($result->num_rows()>0){
+            return $result;
+        }else {
+            return null;
+        }
+    }
+
+    public function getVotersByCentroMesa($centro_votacion, $mesa) {
+        $result=$this->db->query("SELECT documento_identidad, nombre, apellido, voto
+                                    FROM votantes
+                                    WHERE codigo_centrovotacion='10101001' AND mesa='1' AND voto='1'");
+        if ($result->num_rows()>0){
+            return $result;
+        }else {
+            return null;
+        }
+    }
+
+    public function getEmpleado($id_empleado) {
+        $result=$this->db->query("SELECT nombre, apellido
+                                    FROM empleado
+                                    WHERE id='1618';");
+        if ($result->num_rows()>0){
+            return $result;
+        }else {
+            return null;
+        }
+    }
+
 }

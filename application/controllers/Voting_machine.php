@@ -210,7 +210,7 @@ class Voting_machine extends CI_Controller
             }
         }
         if ($this->UsuarioMaquina_model->getmaquina($usuariomaquina) > 0) {
-            $data = new stdClass();
+            //$data = new stdClass();
             $data->error = "la m&aacute;quina ya se ecuentra selccionada por otro usuario.";
             $this->data = $data;
             $this->index();
@@ -219,11 +219,11 @@ class Voting_machine extends CI_Controller
                 // marcamos la mesa como seleccionada para el usuario
                 $this->UsuarioMaquina_model->selccionarMesa($usuariomaquina);
             }
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation', $data);
+            $this->load->view('test/test_voting_machine', $data);
+            $this->load->view('templates/footer');
         }
-        $this->load->view('templates/header');
-        $this->load->view('templates/navigation', $data);
-        $this->load->view('test/test_voting_machine', $data);
-        $this->load->view('templates/footer');
     }
 
     public function change_votes() {

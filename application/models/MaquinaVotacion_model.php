@@ -156,6 +156,7 @@ class MaquinaVotacion_model extends CI_Model
                                         	mv.centro_votacion,
                                         	mv.mesa,
                                         	mv.modelo_maquina,
+                                        	mv.medio_transmision,
                                             mv.id_estatus_maquina,
                                         	em.descripcion estatus
                                         FROM maquina_votacion mv, estatus_maquina em

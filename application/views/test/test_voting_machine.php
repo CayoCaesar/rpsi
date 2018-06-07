@@ -7,30 +7,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="container">
     <div class="row">
         <?php
-        $fila=$consulta->result();
-        $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
-        $finalizado = false;
+        if (!is_null($consulta)) {
+            $fila=$consulta->result();
+            $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
+            $finalizado = false;
 
-        switch ($fila[0]->estatus) {
-            case "SELECCIONADA":
-                $proxEstatus = "Instalaci&oacute;n";
-                break;
-            case "INSTALADA":
-                $proxEstatus = "Apertura";
-                break;
-            case "APERTURADA":
-                $proxEstatus = "Votaci&oacute;n";
-                break;
-            case "VOTACION":
-                $proxEstatus = "Cierre";
-                break;
-            case "CERRADA":
-                $proxEstatus = "Transmisi&oacute;n";
-                break;
-            case "TRANSMITIDA":
-                $proxEstatus = "Transmisi&oacute;n";
-                $finalizado = true;
-                break;
+            switch ($fila[0]->estatus) {
+                case "SELECCIONADA":
+                    $proxEstatus = "Instalaci&oacute;n";
+                    break;
+                case "INSTALADA":
+                    $proxEstatus = "Apertura";
+                    break;
+                case "APERTURADA":
+                    $proxEstatus = "Votaci&oacute;n";
+                    break;
+                case "VOTACION":
+                    $proxEstatus = "Cierre";
+                    break;
+                case "CERRADA":
+                    $proxEstatus = "Transmisi&oacute;n";
+                    break;
+                case "TRANSMITIDA":
+                    $proxEstatus = "Transmisi&oacute;n";
+                    $finalizado = true;
+                    break;
+            }
         }
 
         ?>
