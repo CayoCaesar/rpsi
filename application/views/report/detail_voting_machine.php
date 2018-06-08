@@ -17,7 +17,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $fila=$consulta->result();
             $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
             $reemplazos = $contingencia->result_array();
-            $errores = $errors->result_array();
+            var_dump($reemplazos);
+        $errores = $errors->result_array();
             $votantes = $voters->result_array();
             $operador = $user->result();
         ?>
@@ -109,14 +110,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </thead>
             <tbody>
             <?php
-                foreach ($votantes as $item) {
-                    ?>
-                    <tr>
-                        <td><?php echo $item['documento_identidad']; ?></td>
-                        <td><?php echo $item['nombre']; ?></td>
-                        <td><?php echo $item['apellido']; ?></td>
-                    </tr>
-                    <?php
+                if (!is_null($votantes)) {
+                    foreach ($votantes as $item) {
+                        ?>
+                        <tr>
+                            <td><?php echo $item['documento_identidad']; ?></td>
+                            <td><?php echo $item['nombre']; ?></td>
+                            <td><?php echo $item['apellido']; ?></td>
+                        </tr>
+                        <?php
+                    }
+                } else {
+                    echo 'N/A';
                 }
             ?>
             </tbody>
@@ -131,8 +136,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <tr>
                 <td>
                     <?php
-                    if (is_null($fila[0]->medio_transmision) || $fila[0]->medio_transmision != ""){
-                        echo $fila[0]->medio_transmision;
+                    if ($fila[0]->id_estatus_maquina == '7'){
+                        echo $fila[0]->estatus;
                     } else {
                         echo 'N/A';
                     }
@@ -145,7 +150,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <table id="dataTable">
             <thead>
             <tr>
-                <td>Reemplazos:</td>
+                <td colspan="2">Reemplazos:</td>
+            </tr>
+            <tr>
+                <td>Descripción:</td>
+                <td>Fase:</td>
             </tr>
             </thead>
             <tbody>
@@ -153,7 +162,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             foreach ($reemplazos as $item) {
                 ?>
                 <tr>
-                    <td><?php echo $item['descripcion']; ?></td>
+                    <td><?php echo $item['reemplazo']; ?></td>
+                    <td><?php echo $item['fase']; ?></td>
                 </tr>
                 <?php
             }

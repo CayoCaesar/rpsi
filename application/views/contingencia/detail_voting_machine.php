@@ -58,7 +58,7 @@
                             foreach($reemplazos as $row) {
                         ?>
                             <tr>
-                                <td><?php echo $row->descripcion ?></td>
+                                <td><?php echo $row->reemplazo ?></td>
                                 <td><input type='checkbox' name='reemplazo[]' id="<?= $row->id ?>" value='<?= $row->id ?>' checked /></td>
                             </tr>
                         <?php

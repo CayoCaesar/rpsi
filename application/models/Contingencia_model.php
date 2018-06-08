@@ -27,8 +27,9 @@ class Contingencia_model extends CI_Model
     }
 
     public function getReemplazosByMv($id_maquina){
-        $result=$this->db->query("SELECT proceso_reemplazo.id, tipo_reemplazo.descripcion, proceso_reemplazo.entregado
+        $result=$this->db->query("SELECT proceso_reemplazo.id, tipo_reemplazo.descripcion as reemplazo, proceso_reemplazo.entregado, fase.descripcion as fase
                                 FROM proceso_reemplazo
+                                INNER JOIN fase ON proceso_reemplazo.id_fase = fase.id
                                 INNER JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id
                                 INNER JOIN proceso ON proceso_reemplazo.id_proceso = proceso.id
                                 INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
