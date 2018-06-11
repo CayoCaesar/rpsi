@@ -167,7 +167,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         <?php }else{?>
             <div class="small-12 column text-right buttonPanel">
-                <input id="btnEnviar" class="button small right" value="Aceptar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
+                <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion" name = "codigo_centrovotacion">
+                <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name = "mesa">
+                <input id="btnEnviar" class="button small right alert" value="Descargar Reporte" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/report/pdf_gen'; this.form.method='POST'">
+                <input id="btnEnviar" class="button small right" value="Finalizar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
             </div>
         <?php }?>
         <?= form_close() ?>

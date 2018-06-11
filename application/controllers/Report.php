@@ -6,6 +6,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  *
  * @extends CI_Controller
  */
+
 class Report extends CI_Controller
 {
 
@@ -53,15 +54,10 @@ class Report extends CI_Controller
         $mv = $this->MaquinaVotacion_model->getModelosMV();
         $mt = $this->MaquinaVotacion_model->getCountTotalMedioTransmision();
         $tr = $this->MaquinaVotacion_model->getCountTotalTipReemplazo();
-        
-        
-        
+
         $resultCountErrorTipo= $this->Error_model->getCountErrorTipo();
         $resultTotalErrorTipo= $this->Error_model->getTotalErrorTipo();
-        
-        
-       
-        
+
         // echo count($mv->result());
         $reports = array();
         
@@ -100,10 +96,7 @@ class Report extends CI_Controller
         $data->reemplazo = $tr;
         $data->countErrorTipo = $resultCountErrorTipo;
         $data->totalErrorTipo = $resultTotalErrorTipo;
-        
 
-        
-        
         $data->reports = $reports;
         
         $this->load->view('templates/header');
@@ -167,11 +160,8 @@ class Report extends CI_Controller
             );
 
             if ($result != null) {
-                if ($contingencia == NULL) {
-                    $data->error = "No hay reemplazos disponibles para está Máquina de Votación.";
-                }
                 $this->load->view('templates/header');
-                $this->load->view('templates/navigation', $data);
+                $this->load->view('templates/navigation');
                 $this->load->view('report/detail_voting_machine', $dataVotingMachine);
                 $this->load->view('templates/footer');
             } else {
@@ -182,6 +172,43 @@ class Report extends CI_Controller
                 $this->load->view('templates/footer');
             }
         }
+    }
+
+    public function pdf_gen()
+    {
+        $centrovotacion = $this->input->post('codigo_centrovotacion');
+        $mesa = $this->input->post('mesa');
+
+        $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+        $maquina_votacion = $result->row();
+        $id_maquina = $maquina_votacion->id;
+        $contingencia = $this->Contingencia_model->getReemplazosByMv($id_maquina);
+        $errores = $this->Contingencia_model->getErrorsByMv($id_maquina);
+        $votantes = $this->Contingencia_model->getVotersByCentroMesa($centrovotacion, $mesa);
+        $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);
+
+        $dataVotingMachine = array(
+            'consulta' => $result,
+            'contingencia' => $contingencia,
+            'errors' => $errores,
+            'voters' => $votantes,
+            'user' => $operador
+        );
+        //load the view and saved it into $html variable
+        $html=$this->load->view('report/report_pdf', $dataVotingMachine, true);
+
+        //this the the PDF filename that user will get to download
+        $time = time();
+        $pdfFilePath = "reporte_pruebas_mv_". $centrovotacion . "_" . $mesa . ".pdf";
+
+        //load mPDF library
+        $this->load->library('m_pdf');
+
+        //generate the PDF from the given html
+        $this->m_pdf->pdf->WriteHTML($html);
+
+        //download it.
+        $this->m_pdf->pdf->Output($pdfFilePath, "D");
     }
 
 }

@@ -49,12 +49,13 @@ class Contingencia_model extends CI_Model
     }
 
     public function getErrorsByMv($id_maquina) {
-        $result=$this->db->query("SELECT proceso_error.id, error.descripcion, maquina_votacion.id_estatus_maquina
+        $result=$this->db->query("SELECT proceso_error.id, error.descripcion AS error, fase.descripcion AS fase
                                     FROM proceso_error
+                                    INNER JOIN fase ON proceso_error.id_fase = fase.id
                                     INNER JOIN error ON proceso_error.id_error = error.id
                                     INNER JOIN proceso ON proceso_error.id_proceso = proceso.id
                                     INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
-                                    WHERE proceso.id_maquina_votacion = '56'");
+                                    WHERE proceso.id_maquina_votacion = '". $id_maquina ."'");
         if ($result->num_rows()>0){
             return $result;
         }else {
@@ -65,7 +66,7 @@ class Contingencia_model extends CI_Model
     public function getVotersByCentroMesa($centro_votacion, $mesa) {
         $result=$this->db->query("SELECT documento_identidad, nombre, apellido, voto
                                     FROM votantes
-                                    WHERE codigo_centrovotacion='10101001' AND mesa='1' AND voto='1'");
+                                    WHERE codigo_centrovotacion='".$centro_votacion."' AND mesa='".$mesa."' AND voto='1'");
         if ($result->num_rows()>0){
             return $result;
         }else {
@@ -76,7 +77,7 @@ class Contingencia_model extends CI_Model
     public function getEmpleado($id_empleado) {
         $result=$this->db->query("SELECT nombre, apellido
                                     FROM empleado
-                                    WHERE id='1618';");
+                                    WHERE id='".$id_empleado."'");
         if ($result->num_rows()>0){
             return $result;
         }else {

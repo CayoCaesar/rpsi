@@ -16,14 +16,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php
             $fila=$consulta->result();
             $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
-            $reemplazos = $contingencia->result_array();
-            var_dump($reemplazos);
-        $errores = $errors->result_array();
-            $votantes = $voters->result_array();
+            if (!is_null($contingencia)) {
+                $reemplazos = $contingencia->result();
+            }
+            $errores = $errors->result_array();
+            if (!is_null($voters)){
+                $votantes = $voters->result_array();
+            }
             $operador = $user->result();
         ?>
 
-        <?= form_open('/contingencia/liberar') ?>
+        <?= form_open('/report/pdf_gen') ?>
+        <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion" name = "codigo_centrovotacion">
+        <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name = "mesa">
         <img style="width: 200px;" src="<?= base_url()?>Content/Images/cne_logo.png" />
         <img style="float: right; width: 200px;" src="<?= base_url()?>Content/Images/header-logo.png" />
         <br>
@@ -60,7 +65,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <table id="dataTable">
             <thead>
                 <tr>
-                    <td>Detalle de los errores encontrados en la fase de pruebas:</td>
+                    <td colspan="2">Detalle de los errores encontrados en la fase de pruebas:</td>
+                </tr>
+                <tr>
+                    <td>Descripción:</td>
+                    <td>Fase:</td>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +77,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     foreach ($errores as $item) {
                 ?>
                         <tr>
-                            <td><?php echo $item['descripcion']; ?></td>
+                            <td><?php echo $item['error']; ?></td>
+                            <td><?php echo $item['fase']; ?></td>
                         </tr>
                 <?php
                     }
@@ -86,7 +96,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <tr>
                     <td>
                         <?php
-                            if (is_null($fila[0]->medio_transmision) || $fila[0]->medio_transmision != ""){
+                            if ($fila[0]->medio_transmision != ""){
                                 echo $fila[0]->medio_transmision;
                             } else {
                                 echo 'N/A';
@@ -110,7 +120,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </thead>
             <tbody>
             <?php
-                if (!is_null($votantes)) {
+                if (isset($votantes)) {
                     foreach ($votantes as $item) {
                         ?>
                         <tr>
@@ -121,7 +131,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <?php
                     }
                 } else {
-                    echo 'N/A';
+                    ?>
+                    <tr>
+                        <td colspan="3">N/A</td>
+                    </tr>
+                    <?php
                 }
             ?>
             </tbody>
@@ -159,13 +173,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </thead>
             <tbody>
             <?php
+            if (isset($reemplazos)) {
             foreach ($reemplazos as $item) {
                 ?>
                 <tr>
-                    <td><?php echo $item['reemplazo']; ?></td>
-                    <td><?php echo $item['fase']; ?></td>
+                    <td><?php echo $item->reemplazo; ?></td>
+                    <td><?php echo $item->fase; ?></td>
                 </tr>
                 <?php
+            }
+            } else { ?>
+                <tr>
+                    <td colspan="2">N/A</td>
+                </tr>
+            <?php
             }
             ?>
             </tbody>
