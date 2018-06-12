@@ -174,7 +174,29 @@ class MaquinaVotacion_model extends CI_Model
         }
         
     }
-    
+
+    public function getErrorsVotingMachine(){
+
+        $result=$this->db->query("SELECT maquina_votacion.codigo_centrovotacion, maquina_votacion.mesa, error.descripcion AS error, maquina_votacion.modelo_maquina, maquina_votacion.medio_transmision, estatus_maquina.descripcion AS estatus_maquina, tipo_reemplazo.descripcion AS reemplazo
+                                    FROM proceso_error
+                                    INNER JOIN proceso ON proceso_error.id_proceso = proceso.id
+                                    LEFT JOIN proceso_reemplazo ON proceso.id = proceso_reemplazo.id_proceso
+                                    LEFT JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id 
+                                    INNER JOIN error ON proceso_error.`id_error` = error.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
+                                    INNER JOIN estatus_maquina ON maquina_votacion.id_estatus_maquina = estatus_maquina.id");
+
+        if ($result->num_rows()>0){
+
+            return $result;
+
+        }else {
+
+            return null;
+        }
+
+    }
+
     public function getDetailVotingMachinebById($id){
         
         $this->db->select('mv.id, mv.codigo_estado, mv.estado, mv.codigo_municipio, mv.municipio, mv.codigo_parroquia, mv.parroquia, 
