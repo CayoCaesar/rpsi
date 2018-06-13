@@ -102,41 +102,44 @@ class audit extends CI_Controller{
     
     public function consultada()
     {
-
+      //  $data = $this->data;
         $data = new stdClass();
-        if ($this->UsuarioMaquina_model->getCountUsuario($_SESSION['id']) > 0) {
-            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
-            $result = $this->MaquinaVotacion_model->getDetailVotingMachinebById($idmaquina);
-            $dataVotingMachine = array(
-                'consulta' => $result
-            );
-            if ($result != null) {
-                $this->load->view('templates/header');
-                $this->load->view('templates/navigation', $data);
-                $this->load->view('audit/audit_detail', $dataVotingMachine);
-            }
-        } else {
-            $data = $this->data;
-            $this->load->view('templates/header');
-            $this->load->view('templates/navigation', $data);
-            $this->load->view('audit/audit_consultar');
-            $this->load->view('templates/footer');
-        }
-    
         
-    
-       /* //$idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
-        $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
-        echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
-        $data->result = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
+        if ($this->input->post('id') != null) {
+            $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
+        } else {
+            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
+        }
+        $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
+        
+        // obtenemos el centro y mesa de votacion
+        $query=$data->consulta->result_array();
+        $centro_votacion = $query[0]['codigo_centrovotacion'];
+        $mesa = $query[0]['mesa'];
         
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
-        
-        $fila= $data->result->result();
+        $fila = $data->consulta->result();
         $usuariomaquina = array();
         $usuariomaquina["id_usuario"] = $_SESSION['id'];
-        $usuariomaquina["id_maquina"] = $fila[0]->id;*/
+        $usuariomaquina["id_maquina"] = $fila[0]->id;
+        
+        if ($this->UsuarioMaquina_model->getmaquina($usuariomaquina) > 0) {
+            $data = new stdClass();
+            $data->error = "la m&aacute;quina ya se ecuentra selccionada por otro usuario.";
+            $this->data = $data;
+            $this->index();
+        } else {
+            if ($this->UsuarioMaquina_model->getusuarioMaquina($usuariomaquina) == 0) {
+                // marcamos la mesa como seleccionada para el usuario
+                $this->UsuarioMaquina_model->selccionarMesa($usuariomaquina);
+            }
+        }
+        $this->load->view('templates/header');
+        $this->load->view('templates/navigation');
+        $this->load->view('audit/audit_detail', $data);
+        $this->load->view('templates/footer');
+       
       
     }
   

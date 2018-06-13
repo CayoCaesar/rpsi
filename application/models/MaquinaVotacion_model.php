@@ -212,6 +212,33 @@ class MaquinaVotacion_model extends CI_Model
         }
     }
     
+    public function getDetailauditMachine($id){
+        
+        $result=$this->db->query("SELECT 	mv.id,
+                                            mv.codigo_estado,
+                                        	mv.estado,
+                                        	mv.codigo_municipio,
+                                        	mv.municipio,
+                                        	mv.codigo_parroquia,
+                                        	mv.parroquia,
+                                        	mv.codigo_centrovotacion,
+                                        	mv.centro_votacion,
+                                        	mv.mesa,
+                                        	mv.modelo_maquina,
+                                            mv.id_estatus_maquina,
+                                        	em.descripcion estatus
+                                        FROM maquina_votacion mv, estatus_maquina em
+                                        WHERE mv.id_estatus_maquina=em.id
+                                        AND mv.id='" . $id . "'");
+        echo("<script>console.log('hola: ".json_encode($id)."');</script>");
+        
+        if ($result->num_rows()>0){
+            
+            return $result;
+        }else {
+            return null;
+        }
+    }
     public function getCodigoByStatusId($estatus,$id){
         
         switch ($estatus) {
