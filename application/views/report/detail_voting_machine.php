@@ -19,7 +19,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             if (!is_null($contingencia)) {
                 $reemplazos = $contingencia->result();
             }
-            $errores = $errors->result_array();
+            if (!is_null($errors)) {
+                $errores = $errors->result_array();
+            }
             if (!is_null($voters)){
                 $votantes = $voters->result_array();
             }
@@ -74,13 +76,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </thead>
             <tbody>
                 <?php
-                    foreach ($errores as $item) {
+                    if (isset($errores)) {
+                        foreach ($errores as $item) {
                 ?>
                         <tr>
                             <td><?php echo $item['error']; ?></td>
                             <td><?php echo $item['fase']; ?></td>
                         </tr>
                 <?php
+                        }
+                    } else { ?>
+                        <tr>
+                            <td colspan="2">N/A</td>
+                        </tr>
+                        <?php
                     }
                 ?>
             </tbody>
@@ -110,9 +119,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <table id="dataTable">
             <thead>
             <tr>
-                <td colspan="3">Fase de Votación:</td>
+                <td colspan="4">Fase de Votación:</td>
             </tr>
             <tr>
+                <td>Nacionalidad:</td>
                 <td>Cédulas:</td>
                 <td>Nombre:</td>
                 <td>Apellido:</td>
@@ -124,6 +134,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     foreach ($votantes as $item) {
                         ?>
                         <tr>
+                            <td><?php echo $item['tipo_documento']; ?></td>
                             <td><?php echo $item['documento_identidad']; ?></td>
                             <td><?php echo $item['nombre']; ?></td>
                             <td><?php echo $item['apellido']; ?></td>
@@ -164,11 +175,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <table id="dataTable">
             <thead>
             <tr>
-                <td colspan="2">Reemplazos:</td>
+                <td colspan="3">Reemplazos:</td>
             </tr>
             <tr>
                 <td>Descripción:</td>
                 <td>Fase:</td>
+                <td>Entregado:</td>
             </tr>
             </thead>
             <tbody>
@@ -179,6 +191,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <tr>
                     <td><?php echo $item->reemplazo; ?></td>
                     <td><?php echo $item->fase; ?></td>
+                    <td>
+                        <?php
+                            if ($item->entregado) {
+                                echo 'SI';
+                            } else {
+                                echo 'NO';
+                            }
+                        ?>
+                    </td>
                 </tr>
                 <?php
             }

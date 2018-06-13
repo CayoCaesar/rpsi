@@ -25,6 +25,7 @@ class User_model extends CI_Model {
         $this->db->WHERE('codigo_centrovotacion', $centro_votacion);
         $this->db->WHERE('mesa', $mesa);
         $this->db->limit($limit, $start);
+        $this->db->order_by("tipo_documento desc, documento_identidad asc");
         $query = $this->db->get();
         if ($query->num_rows() > 0)
         {

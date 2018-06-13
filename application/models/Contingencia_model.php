@@ -41,6 +41,21 @@ class Contingencia_model extends CI_Model
         }
     }
 
+    public function getReemplazosByMvReport($id_maquina){
+        $result=$this->db->query("SELECT proceso_reemplazo.id, tipo_reemplazo.descripcion as reemplazo, proceso_reemplazo.entregado, fase.descripcion as fase
+                                FROM proceso_reemplazo
+                                INNER JOIN fase ON proceso_reemplazo.id_fase = fase.id
+                                INNER JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id
+                                INNER JOIN proceso ON proceso_reemplazo.id_proceso = proceso.id
+                                INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
+                                WHERE proceso.id_maquina_votacion = '". $id_maquina ."'");
+        if ($result->num_rows()>0){
+            return $result;
+        }else {
+            return null;
+        }
+    }
+
     public function liberarReemplazos($reemplazos, $fechafin) {
         $result=$this->db->query("UPDATE proceso_reemplazo
                                     SET entregado=1, fechafin='".$fechafin."'
@@ -64,9 +79,10 @@ class Contingencia_model extends CI_Model
     }
 
     public function getVotersByCentroMesa($centro_votacion, $mesa) {
-        $result=$this->db->query("SELECT documento_identidad, nombre, apellido, voto
+        $result=$this->db->query("SELECT tipo_documento, documento_identidad, nombre, apellido, voto
                                     FROM votantes
-                                    WHERE codigo_centrovotacion='".$centro_votacion."' AND mesa='".$mesa."' AND voto='1'");
+                                    WHERE codigo_centrovotacion='".$centro_votacion."' AND mesa='".$mesa."' AND voto='1'
+                                    ORDER BY tipo_documento DESC, documento_identidad ASC");
         if ($result->num_rows()>0){
             return $result;
         }else {

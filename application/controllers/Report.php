@@ -143,13 +143,10 @@ class Report extends CI_Controller
             $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
             $maquina_votacion = $result->row();
             $id_maquina = $maquina_votacion->id;
-            $contingencia = $this->Contingencia_model->getReemplazosByMv($id_maquina);
+            $contingencia = $this->Contingencia_model->getReemplazosByMvReport($id_maquina);
             $errores = $this->Contingencia_model->getErrorsByMv($id_maquina);
             $votantes = $this->Contingencia_model->getVotersByCentroMesa($centrovotacion, $mesa);
             $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);
-
-            $prueba = $result->result();
-            //var_dump($prueba);
 
             $dataVotingMachine = array(
                 'consulta' => $result,
@@ -182,7 +179,7 @@ class Report extends CI_Controller
         $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
         $maquina_votacion = $result->row();
         $id_maquina = $maquina_votacion->id;
-        $contingencia = $this->Contingencia_model->getReemplazosByMv($id_maquina);
+        $contingencia = $this->Contingencia_model->getReemplazosByMvReport($id_maquina);
         $errores = $this->Contingencia_model->getErrorsByMv($id_maquina);
         $votantes = $this->Contingencia_model->getVotersByCentroMesa($centrovotacion, $mesa);
         $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);

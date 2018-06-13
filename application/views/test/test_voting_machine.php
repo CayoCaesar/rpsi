@@ -89,6 +89,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <table id="dataTable">
                 <thead>
                 <tr>
+                    <td>Nacionalidad</td>
                     <td>Cedulas</td>
                     <td>Nombre</td>
                     <td>Apellido</td>
@@ -101,6 +102,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     foreach($votantes as $row) {
                         ?>
                         <tr>
+                            <td><?php echo $row->tipo_documento ?></td>
                             <td><?php echo $row->documento_identidad ?></td>
                             <td><?php echo $row->nombre ?></td>
                             <td><?php echo $row->apellido ?></td>

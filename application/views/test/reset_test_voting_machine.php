@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<br>
    <div class="container">
     <div class="row">
-    	<h3>Reiniciar M&aacute;quina de Votaci&oacute;n</h3>
+    	<h3>Reiaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaniciar M&aacute;quina de Votaci&oacute;n</h3>
 
     	<?= form_open('/Voting_machine/resettest') ?>
                 <div class="large-6 medium-4 columns">
