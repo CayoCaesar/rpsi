@@ -1,40 +1,44 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
+
 <h2 class="show-for-small-only"></h2>
 <br>
 <div class="container">
     <div class="row">
         <?php
-        $fila=$consulta->result();
-        $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
-        $finalizado = false;
+        if (!is_null($consulta)) {
+            $fila=$consulta->result();
+            $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
+            $finalizado = false;
 
-        switch ($fila[0]->estatus) {
-            case "SELECCIONADA":
-                $proxEstatus = "Instalaci&oacute;n";
-                break;
-            case "INSTALADA":
-                $proxEstatus = "Apertura";
-                break;
-            case "APERTURADA":
-                $proxEstatus = "Votaci&oacute;n";
-                break;
-            case "VOTACION":
-                $proxEstatus = "Cierre";
-                break;
-            case "CERRADA":
-                $proxEstatus = "Transmisi&oacute;n";
-                break;
-            case "TRANSMITIDA":
-                $proxEstatus = "Transmisi&oacute;n";
-                $finalizado = true;
-                break;
+            switch ($fila[0]->estatus) {
+                case "SELECCIONADA":
+                    $proxEstatus = "Instalaci&oacute;n";
+                    break;
+                case "INSTALADA":
+                    $proxEstatus = "Apertura";
+                    break;
+                case "APERTURADA":
+                    $proxEstatus = "Votaci&oacute;n";
+                    break;
+                case "VOTACION":
+                    $proxEstatus = "Cierre";
+                    break;
+                case "CERRADA":
+                    $proxEstatus = "Transmisi&oacute;n";
+                    break;
+                case "TRANSMITIDA":
+                    $proxEstatus = "Transmisi&oacute;n";
+                    $finalizado = true;
+                    break;
+            }
         }
 
         ?>
 
         <h3>M&aacute;quina de Votaci&oacute;n. Fase <?=$proxEstatus?></h3>
+
         <?= form_open('/voting_machine/procesar') ?>
         <input type="hidden" value="<?= $fila[0]->id; ?>" id="id" name = "id">
         <input type="hidden" value="<?= $fila[0]->estatus; ?>" id="estatusmv" name = "estatusmv">
@@ -65,10 +69,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
         <div class="large-6 medium-4 columns">
             <label>Medio de Transmisi&oacute;n</label>
-            <?php if( $fila[0]->id_estatus_maquina !== "5" || $finalizado){?>
+            <?php if($fila[0]->id_estatus_maquina !== "5" || $finalizado){?>
             <select name="medio" id="medio" disabled>
                 <?php }else{?>
-
                 <select name="medio" id="medio">
                     <option value="">Seleccione</option>
                     <option value="DIAL UP">DIAL UP</option>
@@ -80,90 +83,106 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
 
         <br>
-        <?php if ($fila[0]->id_estatus_maquina == "3"){?>
+        <?php if ($fila[0]->id_estatus_maquina == "3" && !$stop_process) { ?>
             <h3>Cedulas Asociadas a esta Maquina</h3>
             <br>
-            <form method="POST" action="">
-
-                <table id="dataTable">
-                    <thead>
-                    <tr>
-                        <td>Cedulas</td>
-                        <td>Nombre</td>
-                        <td>Apellido</td>
-                        <td>Estatus Votaci&oacute;n</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                        if (isset($votantes)) {
-                            foreach($votantes as $row) {
-                    ?>
+            <table id="dataTable">
+                <thead>
+                <tr>
+                    <td>Cedulas</td>
+                    <td>Nombre</td>
+                    <td>Apellido</td>
+                    <td>Estatus Votaci&oacute;n</td>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if (isset($votantes)) {
+                    foreach($votantes as $row) {
+                        ?>
                         <tr>
-                            <td><?php echo $row -> documento_identidad ?></td>
-                            <td><?php echo $row -> nombre ?></td>
-                            <td><?php echo $row -> apellido ?></td>
-                            <td><input type="checkbox" name="voto[] value="<?php echo set_value($row -> voto); ?>"></td>
+                            <td><?php echo $row->documento_identidad ?></td>
+                            <td><?php echo $row->nombre ?></td>
+                            <td><?php echo $row->apellido ?></td>
+                            <td>
+                                <?php if ($row->voto == 1){ ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' checked /> <?php echo $row->id ?>
+                                <?php } else if ($row->voto == 0) { ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' /> <?php echo $row->id ?>
+                                <?php } ?>
+                            </td>
                         </tr>
-                    <?php
-                            }
-                        }
-                    ?>
-                    </tbody>
-                </table>
-                <?php if (isset($links)) { ?>
-                    <?php echo $links ?>
-                <?php } ?>
-                <div class="small-12 column text-right buttonPanel">
-                    <input id="btnEnviar" class="button small right" value="Cambiar Estatus" type="submit">
-                </div>
-            </form>
+                        <?php
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+            <?php if (isset($links)) { ?>
+                <?php echo $links ?>
+            <?php } ?>
+        <?php }?>
 
+        <?php
+             // se tienen que mostrar en todas las fases menos en auditoria
+            if (!$finalizado && !$stop_process) {
+        ?>
             <h3>Registrar Errores</h3>
             <div class="large-12 medium-4 columns">
                 <label>Buscar Error</label>
                 <select data-autocomplete=""  multiple="" name="error[]" id = "error">
                     <option value="">Buscar errores</option>
                     <?php
-                    foreach ($errormv->result() as $error){
-                        ?>
-                        <option value="<?= $error->id?>"><?= $error->descripcion?></option>
-                    <?php }
-
+                        foreach ($errormv->result() as $error) {
+                    ?>
+                            <option value="<?= $error->id?>"><?= $error->descripcion?></option>
+                    <?php
+                        }
                     ?>
                 </select>
-
             </div>
             <br>
-        <?php }?>
-        <?php if (!$finalizado){?>
+
             <h3>Tipo Reemplazo</h3>
             <div class="large-6 medium-4 columns">
                 <label>Tipo Reemplazo</label>
                 <select name="tiporeemplazo" id ="tiporeemplazo">
                     <option value="">Seleccione</option>
                     <?php
-                    foreach ($tiporeemplazo->result() as $tipor){
-                        ?>
+                        foreach ($tiporeemplazo->result() as $tipor) {
+                    ?>
                         <option value="<?= $tipor->id?>"><?= $tipor->descripcion?></option>
-                        <?php
-                    }
+                    <?php
+                        }
                     ?>
                 </select>
             </div>
             <br>
-        <?php }?>
-        <?php if (!$finalizado){?>
+        <?php } ?>
+
+        <?php if (!$finalizado && !$stop_process){?>
             <div class="small-12 column text-right buttonPanel">
                 <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
                 <input id="btnEnviar" class="button small right" value="Aceptar" type="submit">
             </div>
         <?php }else{?>
             <div class="small-12 column text-right buttonPanel">
-                <input id="btnEnviar" class="button small right" value="Aceptar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
+                <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion" name = "codigo_centrovotacion">
+                <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name = "mesa">
+                <input id="btnEnviar" class="button small right alert" value="Descargar Reporte" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/report/pdf_gen'; this.form.method='POST'">
+                <input id="btnEnviar" class="button small right" value="Finalizar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
             </div>
         <?php }?>
         <?= form_close() ?>
+        <script>
+            let checkboxes = document.getElementsByName('voto');
+            for(let index in checkboxes) {
+                checkboxes[index].onchange = updateFunc;
+            }
+            function updateFunc() {
+                PostToServer(this.value, this.checked);
+            }
+        </script>
 
     </div>
 </div>

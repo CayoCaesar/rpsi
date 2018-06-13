@@ -53,6 +53,7 @@ class Voting_machine extends CI_Controller
         $this->load->model('Fase_model');
         $this->load->model('UsuarioMaquina_model');
         $this->load->model('User_model');
+        $this->load->model('Contingencia_model');
         $data = new stdClass();
     }
 
@@ -101,7 +102,6 @@ class Voting_machine extends CI_Controller
         } else {
             
             $centrovotacionmesa = $this->input->post('codigo_centrovotacionmesa');
-            echo("<script>console.log('centrovotacionmesa: ".json_encode($centrovotacionmesa)."');</script>");
             
             $campos = explode(".", $centrovotacionmesa);
             
@@ -110,7 +110,6 @@ class Voting_machine extends CI_Controller
                 $mesa = $campos[1];
                 
                 $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
-                echo("<script>console.log('maquina de votación: ".json_encode($result->result())."');</script>");
                 $dataVotingMachine = array(
                     'consulta' => $result
                 );
@@ -134,7 +133,6 @@ class Voting_machine extends CI_Controller
                         $this->load->view('test/detail_voting_machine',$dataVotingMachine);
                         $this->load->view('templates/footer');
                     }else{
-                        echo("<script>console.log('aquiiiiiiiiiiiiiiiiiiiiiii');</script>");
                         $this->load->view('templates/header');
                         $this->load->view('templates/navigation');
                         $this->load->view('test/detail_voting_machine', $dataVotingMachine);
@@ -168,6 +166,16 @@ class Voting_machine extends CI_Controller
         } else {
             $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
         }
+
+        $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
+
+        if ($contingencia != null){
+            $data->stop_process = true;
+            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
+        }else {
+            $data->stop_process = false;
+        }
+
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
 
         // obtenemos el centro y mesa de votacion
@@ -204,7 +212,7 @@ class Voting_machine extends CI_Controller
             }
         }
         if ($this->UsuarioMaquina_model->getmaquina($usuariomaquina) > 0) {
-            $data = new stdClass();
+            //$data = new stdClass();
             $data->error = "la m&aacute;quina ya se ecuentra selccionada por otro usuario.";
             $this->data = $data;
             $this->index();
@@ -213,11 +221,42 @@ class Voting_machine extends CI_Controller
                 // marcamos la mesa como seleccionada para el usuario
                 $this->UsuarioMaquina_model->selccionarMesa($usuariomaquina);
             }
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation', $data);
+            $this->load->view('test/test_voting_machine', $data);
+            $this->load->view('templates/footer');
         }
-        $this->load->view('templates/header');
-        $this->load->view('templates/navigation',$this->data);
-        $this->load->view('test/test_voting_machine', $data);
-        $this->load->view('templates/footer');
+    }
+
+    public function change_votes() {
+        $data = $this->data;
+        $data = new stdClass();
+
+        $votante_id = $this->input->post('voto');
+        $votante_estatus = $this->input->post('estatus');
+
+        if ($votante_estatus == 'true') {
+            $votante_estatus = 1;
+        } else if ($votante_estatus == 'false') {
+            $votante_estatus = 0;
+        }
+
+        $data = array(
+            'table_name' => 'votantes', // pass the real table name
+            'id' => $votante_id,
+            'voto' => $votante_estatus
+        );
+
+        if($this->User_model->upddata($data)) // call the method from the model
+        {
+            // update successful
+            echo("<script>console.log('update successful');</script>");
+        }
+        else
+        {
+            // update not successful
+            echo("<script>console.log('update not successful');</script>");
+        }
     }
 
     public function resettest()
@@ -305,6 +344,16 @@ class Voting_machine extends CI_Controller
         $reemplazo = false;
         $validation = true;
         $idmaquina = $this->input->post('id');
+
+        $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
+
+        if ($contingencia != null){
+            $data->stop_process = true;
+            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
+        }else {
+            $data->stop_process = false;
+        }
+
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();

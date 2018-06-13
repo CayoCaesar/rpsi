@@ -52,6 +52,17 @@ class User_model extends CI_Model {
         //return $this->db->count_all("votantes");
     }
 
+    public function getInfoVotante($id) {
+        $query = $this->db->get_where('votantes', array('id' => $id));
+        return $query;
+    }
+
+    public function upddata($data) {
+        extract($data);
+        $this->db->where('id', $id);
+        $this->db->update($table_name, array('voto' => $voto));
+        return true;
+    }
     /**
      * create_user function.
      *

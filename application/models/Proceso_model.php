@@ -38,13 +38,12 @@ class Proceso_model extends CI_Model
                 $reemplazoinsert["id_proceso"] = $idproceso->id;
             }
             $reemplazoinsert["id_reemplazo"] = $reemplazo;
+            $reemplazoinsert["id_usuario_contingencia"] = $dataProceso['id_usuario'];
+            $reemplazoinsert["id_fase"] = $dataProceso['id_fase'];
+            $reemplazoinsert["fechainicio"] = $dataProceso['fechainicio'];
+            $reemplazoinsert["entregado"] = 0;
             $this->db->insert("proceso_reemplazo",$reemplazoinsert);
-            
         }
-        
-        
-        
-        
         $this->db->trans_complete();
         
         if ($this->db->trans_status() === FALSE){
@@ -76,14 +75,16 @@ class Proceso_model extends CI_Model
             }
             $this->db->insert("proceso_error",$error);
         }
-        
-        
+
         if ($reemplazo !== null &&  $reemplazo !== "" ){
             $reemplazoinsert = array();
             $reemplazoinsert["id_proceso"] = $id;
             $reemplazoinsert["id_reemplazo"] = $reemplazo;
+            $reemplazoinsert["id_usuario_contingencia"] = $dataProceso['id_usuario'];
+            $reemplazoinsert["id_fase"] = $dataProceso['id_fase'];
+            $reemplazoinsert["fechainicio"] = $dataProceso['fechainicio'];
+            $reemplazoinsert["entregado"] = 0;
             $this->db->insert("proceso_reemplazo",$reemplazoinsert);
-            
         }
         
         $this->db->trans_complete();
@@ -99,16 +100,11 @@ class Proceso_model extends CI_Model
         
         $result=$this->db->query("DELETE FROM proceso " .
             "WHERE id_maquina_votacion=" . $idmaquina );
-        ///////
         if ($result->num_rows()>0){
-            
             return $result;
-            
         }else {
-            
             return null;
         }
-        
     }
     
     public function countProcesoByIdMaquina($idmaquina, $usuario, $fase) {
