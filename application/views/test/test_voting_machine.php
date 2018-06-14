@@ -135,11 +135,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <select data-autocomplete=""  multiple="" name="error[]" id = "error">
                     <option value="">Buscar errores</option>
                     <?php
+                        var_dump($$errorselect);
+                        $selected = false;
                         foreach ($errormv->result() as $error) {
+                            if (count($errorselect) > 0) {
+                                foreach ($errorselect as $errorSeleccionado) {
+                                    if ($errorSeleccionado == $error->id) {
+                                        $selected = true;
+                                    }
+                                }
+                            }
+                            if ($selected) {
                     ?>
-                            <option value="<?= $error->id?>"><?= $error->descripcion?></option>
+                            <option value="<?= $error->id?>" selected><?= $error->descripcion?></option>
                     <?php
-                        }
+                                $selected = false;
+                                } else { ?>
+                                    <option value="<?= $error->id?>"><?= $error->descripcion?></option>
+                                <?php
+                                }
+                            }
                     ?>
                 </select>
             </div>

@@ -158,6 +158,7 @@ class Voting_machine extends CI_Controller
         //echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
         $data = $this->data;
         $data = new stdClass();
+        $errosrselect = array();
 
         if ($this->input->post('id') != null) {
             $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
@@ -165,6 +166,13 @@ class Voting_machine extends CI_Controller
             $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
         }
 
+        $errores = $this->MaquinaVotacion_model->getErrorVotindMahcineById($idmaquina);
+        if ($errores != null) {
+            foreach ($errores->result_array() as $error) {
+                array_push($errosrselect, $error["id"]);
+            }
+        }
+        $data->errorselect = $errosrselect;
         $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
 
         if ($contingencia != null){
