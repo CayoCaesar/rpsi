@@ -6,8 +6,8 @@ class Proceso_model extends CI_Model
     public function insertproceso($dataProceso, $dataError, $proxestatus,$medioTramsmision, $reemplazo){
         
         $this->db->trans_start();
+
         //cambiamos el estatus de la maquina al proximo estatus
-        
         $this->db->set("id_estatus_maquina",$proxestatus);
         $this->db->set("medio_transmision",$medioTramsmision);
         $this->db->where("id",$dataProceso["id_maquina_votacion"]);
@@ -20,10 +20,8 @@ class Proceso_model extends CI_Model
         $this->db->where("id_maquina_votacion",$dataProceso["id_maquina_votacion"]);
         $result = $this->db->get("proceso");
         
-        //si se selecconaron errores insertamos en la tabla proceso_error
+        //si se seleccionaron errores insertamos en la tabla proceso_error
         if (count($dataError) > 0){
-           
-            
             foreach ($dataError as $error){
                 foreach ($result->result() as $idproceso){
                     $error["id_proceso"] = $idproceso->id;
@@ -56,8 +54,8 @@ class Proceso_model extends CI_Model
     public function updateProceso($dataProceso, $dataError, $proxestatus,$medioTramsmision, $id, $reemplazo){
         
         $this->db->trans_start();
+
         //cambiamos el estatus de la maquina al proximo estatus
-        
         $this->db->set("id_estatus_maquina",$proxestatus);
         $this->db->set("medio_transmision",$medioTramsmision);
         $this->db->where("id",$dataProceso["id_maquina_votacion"]);

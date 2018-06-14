@@ -455,6 +455,7 @@ class Voting_machine extends CI_Controller
                 $this->load->view('templates/footer');
             } else {
                 $proceso = array();
+                $procesoError = array();
                 $errorselect = array();
                 $proceso = [
                     "id_maquina_votacion" => $this->input->post("id"),
@@ -463,14 +464,14 @@ class Voting_machine extends CI_Controller
                     "fechainicio" => date('Y-m-d H:i:s'),
                     "fechafin" => date('Y-m-d H:i:s')
                 ];
-                
-                $procesoError = array();
+
                 if ($cantError > 0) {
                     foreach ($this->input->post('error') as $error) {
                         
                         $errorselect = [
                             "id_proceso" => "",
                             "id_error" => $error,
+                            "id_fase" => $fase,
                             "fecha" => date('Y-m-d H:i:s')
                         ];
                         array_push($procesoError, $errorselect);

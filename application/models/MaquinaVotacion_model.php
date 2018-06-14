@@ -265,12 +265,23 @@ class MaquinaVotacion_model extends CI_Model
         $this->db->set("medio_transmision",NULL);
         $this->db->where("id",$idmaquina);
         $this->db->update("maquina_votacion");
-        
+
+        $this->db->select("codigo_centrovotacion, mesa");
+        $this->db->where("id",$idmaquina);
+        $consulta = $this->db->get("maquina_votacion");
+        $geografico = $consulta->result();
+
+        // reiniciamos los votantes
+        $this->db->set("voto", 0);
+        $this->db->where("codigo_centrovotacion", $geografico[0]->codigo_centrovotacion);
+        $this->db->where("mesa", $geografico[0]->mesa);
+        $this->db->update("votantes");
+
+        // obtenemos todos los procesos registrados de una mv
         $this->db->select("id");
         $this->db->where("id_maquina_votacion",$idmaquina);
         $procesos = $this->db->get("proceso");
-        //echo $this->db->last_query();
-        
+
         foreach ($procesos->result() as $proceso){
            
            //eliminamos los errores
@@ -289,9 +300,7 @@ class MaquinaVotacion_model extends CI_Model
             $this->db->where("id_maquina",$idmaquina);
             $this->db->delete("usuario_maquina");
         }
-        
-        
-        
+
         $this->db->trans_complete();
         
         if ($this->db->trans_status() === FALSE){
