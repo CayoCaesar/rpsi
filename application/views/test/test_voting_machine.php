@@ -7,6 +7,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="container">
     <div class="row">
         <?php
+        $erroresmv = $errormv->result_array();
+
+        if (isset($erroresseleccionados)) {
+            $total = count($erroresmv);
+            for ($i = 0; $i < $total; $i++) {
+                foreach ($erroresseleccionados as $row) {
+                    if (isset($erroresmv[$i])) {
+                        if ($erroresmv[$i]["id"] == $row["id"]) {
+                            unset($erroresmv[$i]);
+                        }
+                    }
+                }
+            }
+        }
+
         if (!is_null($consulta)) {
             $fila=$consulta->result();
             $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
@@ -34,11 +49,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     break;
             }
         }
-
         ?>
 
         <h3>M&aacute;quina de Votaci&oacute;n. Fase <?=$proxEstatus?></h3>
-
         <?= form_open('/voting_machine/procesar') ?>
         <input type="hidden" value="<?= $fila[0]->id; ?>" id="id" name = "id">
         <input type="hidden" value="<?= $fila[0]->estatus; ?>" id="estatusmv" name = "estatusmv">
@@ -129,32 +142,51 @@ defined('BASEPATH') OR exit('No direct script access allowed');
              // se tienen que mostrar en todas las fases menos en auditoria
             if (!$finalizado && !$stop_process) {
         ?>
+                <h3>Errores registrados en fases anteriores</h3>
+                <table id="dataTable">
+                    <thead>
+                    <tr>
+                        <td>Error</td>
+                        <td>Fase</td>
+                        <td>Tipo de error</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        if (isset($erroresseleccionados)) {
+                        if (count($erroresseleccionados) > 0) {
+                            foreach($erroresseleccionados as $row) {
+                                ?>
+                                <tr>
+                                    <td><?php echo $row["error"] ?></td>
+                                    <td><?php echo $row["fase"] ?></td>
+                                    <td><?php echo $row["tipo_error"] ?></td>
+                                </tr>
+                                <?php
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="3">N/A</td>
+                            </tr>
+                            <?php
+                        }
+                        }
+                    ?>
+                    </tbody>
+                </table>
+
             <h3>Registrar Errores</h3>
             <div class="large-12 medium-4 columns">
                 <label>Buscar Error</label>
                 <select data-autocomplete=""  multiple="" name="error[]" id = "error">
                     <option value="">Buscar errores</option>
                     <?php
-                        var_dump($$errorselect);
-                        $selected = false;
-                        foreach ($errormv->result() as $error) {
-                            if (count($errorselect) > 0) {
-                                foreach ($errorselect as $errorSeleccionado) {
-                                    if ($errorSeleccionado == $error->id) {
-                                        $selected = true;
-                                    }
-                                }
-                            }
-                            if ($selected) {
-                    ?>
-                            <option value="<?= $error->id?>" selected><?= $error->descripcion?></option>
-                    <?php
-                                $selected = false;
-                                } else { ?>
-                                    <option value="<?= $error->id?>"><?= $error->descripcion?></option>
-                                <?php
-                                }
-                            }
+                        foreach ($erroresmv as $error) {
+                            ?>
+                                <option value="<?= $error["id"] ?>"><?= $error["descripcion"] ?></option>
+                            <?php
+                        }
                     ?>
                 </select>
             </div>

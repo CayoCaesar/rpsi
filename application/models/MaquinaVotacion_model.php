@@ -198,14 +198,17 @@ class MaquinaVotacion_model extends CI_Model
     }
 
     public function getErrorVotindMahcineById($id) {
-        $result=$this->db->query("select 
+        $result=$this->db->query("SELECT DISTINCT
                                     error.id, 
-                                    error.descripcion,
-                                    error.id_tipo_error
-                                    from proceso_error
-                                    inner join proceso on proceso_error.id_proceso=proceso.id
-                                    inner join maquina_votacion on proceso.id_maquina_votacion=maquina_votacion.id
-                                    inner join error on proceso_error.id_error=error.id
+                                    error.descripcion AS error,
+                                    fase.descripcion AS fase,
+                                    tipo_error.descripcion AS tipo_error
+                                    FROM proceso_error
+                                    INNER JOIN fase ON proceso_error.id_fase=fase.id
+                                    INNER JOIN proceso ON proceso_error.id_proceso=proceso.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion=maquina_votacion.id
+                                    INNER JOIN error ON proceso_error.id_error=error.id
+                                    INNER JOIN tipo_error ON error.id_tipo_error=tipo_error.id
                                     where maquina_votacion.id='".$id."'");
 
         if ($result->num_rows()>0){

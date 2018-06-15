@@ -158,7 +158,7 @@ class Voting_machine extends CI_Controller
         //echo("<script>console.log('id_maquina: ".json_encode($idmaquina)."');</script>");
         $data = $this->data;
         $data = new stdClass();
-        $errosrselect = array();
+        $erroresseleccionados = array();
 
         if ($this->input->post('id') != null) {
             $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
@@ -167,12 +167,11 @@ class Voting_machine extends CI_Controller
         }
 
         $errores = $this->MaquinaVotacion_model->getErrorVotindMahcineById($idmaquina);
+
         if ($errores != null) {
-            foreach ($errores->result_array() as $error) {
-                array_push($errosrselect, $error["id"]);
-            }
+            $erroresseleccionados = $errores->result_array();
         }
-        $data->errorselect = $errosrselect;
+        $data->erroresseleccionados = $erroresseleccionados;
         $contingencia = $this->Contingencia_model->getReemplazosByMv($idmaquina);
 
         if ($contingencia != null){
@@ -346,6 +345,7 @@ class Voting_machine extends CI_Controller
     {
         $data = new stdClass();
         $errosrselect = array();
+        $erroresseleccionados = array();
         $cantError = 0;
         $reemplazo = false;
         $validation = true;
@@ -356,10 +356,16 @@ class Voting_machine extends CI_Controller
         if ($contingencia != null){
             $data->stop_process = true;
             $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
-        }else {
+        } else {
             $data->stop_process = false;
         }
 
+        $errores = $this->MaquinaVotacion_model->getErrorVotindMahcineById($idmaquina);
+        if ($errores != null) {
+            $erroresseleccionados = $errores->result_array();
+        }
+
+        $data->erroresseleccionados = $erroresseleccionados;
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
         $data->errormv = $this->Error_model->getError();
         $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
@@ -383,11 +389,23 @@ class Voting_machine extends CI_Controller
             }
         }
         $data->errorselect = $errosrselect;
+
         // si el tipo de error seleccionado requiere reemplazo validamos que haya selecionado uno.
         if ($reemplazo) {
             if ($this->form_validation->required($this->input->post('tiporeemplazo')) == false) {
                 $validation = false;
                 $data->error = "Debe seleccionar un tipo de reemplazo para el error seleccionado.";
+                $this->load->view('templates/header');
+                $this->load->view('templates/navigation', $data);
+                $this->load->view('test/test_voting_machine', $data);
+                $this->load->view('templates/footer');
+            }
+        }
+
+        if ($this->input->post('tiporeemplazo') != false) {
+            if ($cantError == 0) {
+                $validation = false;
+                $data->error = "Debe seleccionar un tipo de error para el reemplazo seleccionado.";
                 $this->load->view('templates/header');
                 $this->load->view('templates/navigation', $data);
                 $this->load->view('test/test_voting_machine', $data);
@@ -443,7 +461,7 @@ class Voting_machine extends CI_Controller
                 $this->load->view('templates/footer');
                 // si no selecciono error y el codigo de validaci�n no pertenece al proximo estatus
             } else if ($cantError == 0 && $this->input->post('idestatusmaquina') !== "3" && $codigo !== $this->input->post('codigo')) {
-                $data->error = "El c&oacute;digo no es v&aacute;lido, se esperra el c&oacute;digo de " . $proxEstatus . ".";
+                $data->error = "El c&oacute;digo no es v&aacute;lido, se espera el c&oacute;digo de " . $proxEstatus . ".";
                 $this->load->view('templates/header');
                 $this->load->view('templates/navigation', $data);
                 $this->load->view('test/test_voting_machine', $data);

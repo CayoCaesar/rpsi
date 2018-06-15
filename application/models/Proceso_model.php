@@ -29,7 +29,21 @@ class Proceso_model extends CI_Model
                 $this->db->insert("proceso_error",$error);
             }
         }
-        
+
+        $result_1=$this->db->query("SELECT MAX(proceso_error.id)
+                                    FROM proceso_error
+                                    INNER JOIN proceso ON proceso_error.id_proceso=proceso.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion=maquina_votacion.id
+                                    INNER JOIN error ON proceso_error.id_error=error.id
+                                    INNER JOIN tipo_error ON error.id_tipo_error=tipo_error.id
+                                    WHERE proceso.id_maquina_votacion = '". $dataProceso["id_maquina_votacion"] ."' and tipo_error.id = '2';");
+
+        if ($result_1->num_rows()>0) {
+            $error_reemplazo = $result_1->result_array();
+        } else {
+            $error_reemplazo = null;
+        }
+
         if ($reemplazo !== null &&  $reemplazo !== "" ){
             $reemplazoinsert = array();
             foreach ($result->result() as $idproceso){
@@ -40,6 +54,7 @@ class Proceso_model extends CI_Model
             $reemplazoinsert["id_fase"] = $dataProceso['id_fase'];
             $reemplazoinsert["fechainicio"] = $dataProceso['fechainicio'];
             $reemplazoinsert["entregado"] = 0;
+            $reemplazoinsert["id_error"] = $error_reemplazo[0]["MAX(proceso_error.id)"];
             $this->db->insert("proceso_reemplazo",$reemplazoinsert);
         }
         $this->db->trans_complete();
@@ -74,6 +89,20 @@ class Proceso_model extends CI_Model
             $this->db->insert("proceso_error",$error);
         }
 
+        $result_1=$this->db->query("SELECT MAX(proceso_error.id)
+                                    FROM proceso_error
+                                    INNER JOIN proceso ON proceso_error.id_proceso=proceso.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion=maquina_votacion.id
+                                    INNER JOIN error ON proceso_error.id_error=error.id
+                                    INNER JOIN tipo_error ON error.id_tipo_error=tipo_error.id
+                                    WHERE proceso.id_maquina_votacion = '". $dataProceso["id_maquina_votacion"] ."' and tipo_error.id = '2';");
+
+        if ($result->num_rows()>0) {
+            $error_reemplazo = $result_1->result_array();
+        } else {
+            $error_reemplazo = null;
+        }
+
         if ($reemplazo !== null &&  $reemplazo !== "" ){
             $reemplazoinsert = array();
             $reemplazoinsert["id_proceso"] = $id;
@@ -82,6 +111,7 @@ class Proceso_model extends CI_Model
             $reemplazoinsert["id_fase"] = $dataProceso['id_fase'];
             $reemplazoinsert["fechainicio"] = $dataProceso['fechainicio'];
             $reemplazoinsert["entregado"] = 0;
+            $reemplazoinsert["id_error"] = $error_reemplazo[0]["MAX(proceso_error.id)"];
             $this->db->insert("proceso_reemplazo",$reemplazoinsert);
         }
         
