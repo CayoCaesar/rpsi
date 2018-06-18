@@ -6,8 +6,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
    <div class="container">
     <div class="row">
     	<h3> M&aacute;quina de Votaci&oacute;n Elegida para Auditor&iacute;a</h3>
-    
-        <?php $fila=$consulta->result(); $centrovotacion= $fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion ?>
+    	
+        <?php 
+            $fila=$consulta->result();
+            $centrovotacion=$fila[0]->codigo_centrovotacion .'-'. $fila[0]->centro_votacion;
+            
+            if ($consulta_candidatos != null) {
+                $candidatos = $consulta_candidatos->result();
+            }
+            
+            if ($consulta_organizacion_politica != null) {
+                $organizaciones_politicas = $consulta_organizacion_politica->result();
+            }
+        ?>
 
                 <div class="large-12 medium-4 columns">
                     <label>Centro de votaci&oacute;n</label>
@@ -33,96 +44,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
         					<option selected="selected" value="">Seleccione</option>
                                   <?php
-                                         if (isset($tipodocumentoidentidad)) {
-                                                 $selected = false;
-                                                foreach ($tipodocumentoidentidad->result() as $data) {
-                                                    if ($id_tipo_documento_identidad == $data->nombre) {
-                                                        $selected = true;
-                                   ?>
-                               							<option selected="selected" value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                							
-                                	<?php
-                                                    } else {
-                                    ?>
-                                						<option value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                   	<?php
-                                                    }
-                                                } 
-                                         }  
-                                    ?>  
+                                      if (isset($candidatos)) {
+                                        foreach ($candidatos as $data) { ?>
+                                            	<option value="<?= $data->id ?>"><?= $data->candidato ?></option>
+                                            <?php 
+                                        }
+                                     }
+                                 ?>
                    		</select>
     			</div>
     			<div class="field small-6 columns">
     				<label for="num:">Organizaci&oacute;n Pol&iacute;tica:</label> 
-        				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
+       				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
         					<option selected="selected" value="">Seleccione</option>
                                   <?php
-                                         if (isset($tipodocumentoidentidad)) {
-                                                 $selected = false;
-                                                foreach ($tipodocumentoidentidad->result() as $data) {
-                                                    if ($id_tipo_documento_identidad == $data->nombre) {
-                                                        $selected = true;
-                                   ?>
-                               							<option selected="selected" value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                							
-                                	<?php
-                                                    } else {
-                                    ?>
-                                						<option value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                   	<?php
-                                                    }
-                                                } 
-                                         }  
-                                    ?>  
+                                  if (isset($organizaciones_politicas)) {
+                                      foreach ($organizaciones_politicas as $data) { ?>
+                                            	<option value="<?= $data->id ?>"><?= $data->organizacion_politica ?></option>
+                                            <?php 
+                                        }
+                                     }
+                                 ?>
                    		</select>
     			</div>
     			  <h4> - Cargo: Diputado lista Consejo Legislativo... </h4>
-    			<div class="field small-6 columns">
+    			    			<div class="field small-6 columns">
     				<label for="num:">Candidato:</label> 
         				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
         					<option selected="selected" value="">Seleccione</option>
                                   <?php
-                                         if (isset($tipodocumentoidentidad)) {
-                                                 $selected = false;
-                                                foreach ($tipodocumentoidentidad->result() as $data) {
-                                                    if ($id_tipo_documento_identidad == $data->nombre) {
-                                                        $selected = true;
-                                   ?>
-                               							<option selected="selected" value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                							
-                                	<?php
-                                                    } else {
-                                    ?>
-                                						<option value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                   	<?php
-                                                    }
-                                                } 
-                                         }  
-                                    ?>  
+                                      if (isset($candidatos)) {
+                                        foreach ($candidatos as $data) { ?>
+                                            	<option value="<?= $data->id ?>"><?= $data->candidato ?></option>
+                                            <?php 
+                                        }
+                                     }
+                                 ?>
                    		</select>
     			</div>
     			<div class="field small-6 columns">
     				<label for="num:">Organizaci&oacute;n Pol&iacute;tica:</label> 
-        				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
+       				<select id=id_tipo_documento_identidad name="id_tipo_documento_identidad">
         					<option selected="selected" value="">Seleccione</option>
                                   <?php
-                                         if (isset($tipodocumentoidentidad)) {
-                                                 $selected = false;
-                                                foreach ($tipodocumentoidentidad->result() as $data) {
-                                                    if ($id_tipo_documento_identidad == $data->nombre) {
-                                                        $selected = true;
-                                   ?>
-                               							<option selected="selected" value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                							
-                                	<?php
-                                                    } else {
-                                    ?>
-                                						<option value="<?= $data->nombre ?>"><?= $data->descripcion ?></option>
-                                   	<?php
-                                                    }
-                                                } 
-                                         }  
-                                    ?>  
+                                  if (isset($organizaciones_politicas)) {
+                                      foreach ($organizaciones_politicas as $data) { ?>
+                                            	<option value="<?= $data->id ?>"><?= $data->organizacion_politica ?></option>
+                                            <?php 
+                                        }
+                                     }
+                                 ?>
                    		</select>
     			</div>
     		   			
