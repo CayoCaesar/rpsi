@@ -69,11 +69,12 @@
                 <table id="dataTable">
                     <thead>
                     <tr>
-                        <td colspan="2">Detalle de los errores encontrados en la fase de pruebas:</td>
+                        <td colspan="3">Detalle de los errores encontrados en la fase de pruebas:</td>
                     </tr>
                     <tr>
                         <td>Descripción:</td>
                         <td>Fase:</td>
+                        <td>Tipo de Error:</td>
                     </tr>
                     </thead>
                     <tbody>
@@ -84,12 +85,13 @@
                             <tr>
                                 <td><?php echo $item['error']; ?></td>
                                 <td><?php echo $item['fase']; ?></td>
+                                <td><?php echo $item['tipo_error']; ?></td>
                             </tr>
                             <?php
                         }
                     } else { ?>
                         <tr>
-                            <td colspan="2">N/A</td>
+                            <td colspan="3">N/A</td>
                         </tr>
                         <?php
                     }

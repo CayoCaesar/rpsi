@@ -177,14 +177,23 @@ class MaquinaVotacion_model extends CI_Model
 
     public function getErrorsVotingMachine(){
 
-        $result=$this->db->query("SELECT maquina_votacion.codigo_centrovotacion, maquina_votacion.mesa, error.descripcion AS error, maquina_votacion.modelo_maquina, maquina_votacion.medio_transmision, estatus_maquina.descripcion AS estatus_maquina, tipo_reemplazo.descripcion AS reemplazo
+        $result=$this->db->query("SELECT DISTINCT
+                                    proceso.id as proceso_id,
+                                    maquina_votacion.codigo_centrovotacion,
+                                    maquina_votacion.mesa,
+                                    error.descripcion AS error,
+                                    maquina_votacion.modelo_maquina,
+                                    maquina_votacion.medio_transmision,
+                                    estatus_maquina.descripcion AS estatus_maquina,
+                                    tipo_reemplazo.descripcion AS reemplazo
                                     FROM proceso_error
                                     INNER JOIN proceso ON proceso_error.id_proceso = proceso.id
-                                    LEFT JOIN proceso_reemplazo ON proceso.id = proceso_reemplazo.id_proceso
-                                    LEFT JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id 
-                                    INNER JOIN error ON proceso_error.`id_error` = error.id
+                                    LEFT JOIN proceso_reemplazo ON proceso_error.id = proceso_reemplazo.id_error
+                                    LEFT JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id
+                                    INNER JOIN error ON proceso_error.id_error = error.id
                                     INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
-                                    INNER JOIN estatus_maquina ON maquina_votacion.id_estatus_maquina = estatus_maquina.id");
+                                    INNER JOIN estatus_maquina ON maquina_votacion.id_estatus_maquina = estatus_maquina.id
+                                    ORDER BY maquina_votacion.codigo_centrovotacion");
 
         if ($result->num_rows()>0){
 

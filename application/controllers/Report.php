@@ -269,7 +269,7 @@ class Report extends CI_Controller
                 $this->excel->getActiveSheet()->setCellValue("B{$contador}", $l->mesa);
                 $this->excel->getActiveSheet()->setCellValue("C{$contador}", $l->error);
                 $this->excel->getActiveSheet()->setCellValue("D{$contador}", $l->modelo_maquina);
-                if ($l->medio_transmision === "\x0d") {
+                if ($l->medio_transmision === "\x0d" || $l->medio_transmision == null) {
                     $this->excel->getActiveSheet()->setCellValue("E{$contador}", 'NULL');
                 } else {
                     $this->excel->getActiveSheet()->setCellValue("E{$contador}", $l->medio_transmision);

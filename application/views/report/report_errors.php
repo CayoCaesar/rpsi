@@ -35,7 +35,7 @@
                                 <td><?= $records["modelo_maquina"]?></td>
                                 <td>
                                     <?php
-                                        if ($records["medio_transmision"] === "\x0d") {
+                                        if ($records["medio_transmision"] === "\x0d" || $records["medio_transmision"] == null) {
                                             echo 'N/A';
                                         } else {
                                             echo $records["medio_transmision"];

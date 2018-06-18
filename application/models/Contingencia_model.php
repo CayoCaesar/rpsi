@@ -42,7 +42,10 @@ class Contingencia_model extends CI_Model
     }
 
     public function getReemplazosByMvReport($id_maquina){
-        $result=$this->db->query("SELECT proceso_reemplazo.id, tipo_reemplazo.descripcion as reemplazo, proceso_reemplazo.entregado, fase.descripcion as fase
+        $result=$this->db->query("SELECT DISTINCT
+                                tipo_reemplazo.descripcion as reemplazo,
+                                proceso_reemplazo.entregado,
+                                fase.descripcion as fase
                                 FROM proceso_reemplazo
                                 INNER JOIN fase ON proceso_reemplazo.id_fase = fase.id
                                 INNER JOIN tipo_reemplazo ON proceso_reemplazo.id_reemplazo = tipo_reemplazo.id
@@ -64,12 +67,17 @@ class Contingencia_model extends CI_Model
     }
 
     public function getErrorsByMv($id_maquina) {
-        $result=$this->db->query("SELECT proceso_error.id, error.descripcion AS error, fase.descripcion AS fase
+        $result=$this->db->query("SELECT DISTINCT
+                                    error.id, 
+                                    error.descripcion AS error,
+                                    fase.descripcion AS fase,
+                                    tipo_error.descripcion AS tipo_error
                                     FROM proceso_error
-                                    INNER JOIN fase ON proceso_error.id_fase = fase.id
-                                    INNER JOIN error ON proceso_error.id_error = error.id
-                                    INNER JOIN proceso ON proceso_error.id_proceso = proceso.id
-                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion = maquina_votacion.id
+                                    INNER JOIN fase ON proceso_error.id_fase=fase.id
+                                    INNER JOIN proceso ON proceso_error.id_proceso=proceso.id
+                                    INNER JOIN maquina_votacion ON proceso.id_maquina_votacion=maquina_votacion.id
+                                    INNER JOIN error ON proceso_error.id_error=error.id
+                                    INNER JOIN tipo_error ON error.id_tipo_error=tipo_error.id
                                     WHERE proceso.id_maquina_votacion = '". $id_maquina ."'");
         if ($result->num_rows()>0){
             return $result;

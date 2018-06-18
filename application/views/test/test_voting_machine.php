@@ -214,14 +214,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
                 <input id="btnEnviar" class="button small right" value="Aceptar" type="submit">
             </div>
-        <?php }else{?>
+        <?php } else if ($finalizado && $stop_process) { ?>
             <div class="small-12 column text-right buttonPanel">
                 <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion" name = "codigo_centrovotacion">
                 <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name = "mesa">
                 <input id="btnEnviar" class="button small right alert" value="Descargar Reporte" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/report/pdf_gen'; this.form.method='POST'">
                 <input id="btnEnviar" class="button small right" value="Finalizar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
             </div>
-        <?php }?>
+        <?php } else { ?>
+            <input id="btnCloseModalEditor" class="button small right" value="Volver" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
+        <?php } ?>
         <?= form_close() ?>
         <script>
             let checkboxes = document.getElementsByName('voto');
