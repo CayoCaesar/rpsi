@@ -36,7 +36,7 @@
                 <img style="width: 200px;" src="C:/xampp/htdocs/rpsi/Content/Images/cne_logo.png" />
                 <img style="float: right; width: 200px;" src="C:/xampp/htdocs/rpsi/Content/Images/header-logo.png" />
                 <br>
-                <p style="text-align: right; font-size: 1.6875rem;">Fase: <b><span style="color: #007095"><?php echo $fila[0]->estatus; ?></span></b></p>
+                <p style="text-align: right; font-size: 1.6875rem;">Fase Completada: <b><span style="color: #007095"><?php echo $fila[0]->estatus; ?></span></b></p>
                 <table id="dataTable">
                     <thead>
                     <tr>
@@ -73,7 +73,7 @@
                     </tr>
                     <tr>
                         <td>Descripción:</td>
-                        <td>Fase:</td>
+                        <td>Fase Actual:</td>
                         <td>Tipo de Error:</td>
                     </tr>
                     </thead>
@@ -183,7 +183,7 @@
                     </tr>
                     <tr>
                         <td>Descripción:</td>
-                        <td>Fase:</td>
+                        <td>Fase Actual:</td>
                         <td>Entregado:</td>
                     </tr>
                     </thead>
@@ -209,7 +209,7 @@
                         }
                     } else { ?>
                         <tr>
-                            <td colspan="2">N/A</td>
+                            <td colspan="3">N/A</td>
                         </tr>
                         <?php
                     }

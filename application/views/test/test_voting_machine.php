@@ -8,19 +8,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="row">
         <?php
         $erroresmv = $errormv->result_array();
-
-        if (isset($erroresseleccionados)) {
-            $total = count($erroresmv);
-            for ($i = 0; $i < $total; $i++) {
-                foreach ($erroresseleccionados as $row) {
-                    if (isset($erroresmv[$i])) {
-                        if ($erroresmv[$i]["id"] == $row["id"]) {
-                            unset($erroresmv[$i]);
-                        }
-                    }
-                }
-            }
-        }
+// CON ESTE CÓDIGO SE ELIMINAN DEL COMBOBOX LOS ERRORES QUE YA SE TIENEN SELECCIONADOS EN BASE DE DATOS, PERMITIENDO QUE NO SE REPITAN ERRORES POR MV
+//        if (isset($erroresseleccionados)) {
+//            $total = count($erroresmv);
+//            for ($i = 0; $i < $total; $i++) {
+//                foreach ($erroresseleccionados as $row) {
+//                    if (isset($erroresmv[$i])) {
+//                        if ($erroresmv[$i]["id"] == $row["id"]) {
+//                            unset($erroresmv[$i]);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         if (!is_null($consulta)) {
             $fila=$consulta->result();
@@ -121,9 +121,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <td><?php echo $row->apellido ?></td>
                             <td>
                                 <?php if ($row->voto == 1){ ?>
-                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' checked /> <?php echo $row->id ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' checked />
                                 <?php } else if ($row->voto == 0) { ?>
-                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' /> <?php echo $row->id ?>
+                                    <input type='checkbox' name='voto' id="<?= $row->id ?>" value='<?= $row->id ?>' />
                                 <?php } ?>
                             </td>
                         </tr>
@@ -221,8 +221,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input id="btnEnviar" class="button small right alert" value="Descargar Reporte" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/report/pdf_gen'; this.form.method='POST'">
                 <input id="btnEnviar" class="button small right" value="Finalizar" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
             </div>
-        <?php } else { ?>
-            <input id="btnCloseModalEditor" class="button small right" value="Volver" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
         <?php } ?>
         <?= form_close() ?>
         <script>

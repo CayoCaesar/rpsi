@@ -34,7 +34,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <img style="width: 200px;" src="<?= base_url()?>Content/Images/cne_logo.png" />
         <img style="float: right; width: 200px;" src="<?= base_url()?>Content/Images/header-logo.png" />
         <br>
-        <p style="text-align: right; font-size: 1.6875rem;">Fase: <b><span style="color: #007095"><?php echo $fila[0]->estatus; ?></span></b></p>
+        <p style="text-align: right; font-size: 1.6875rem;">Fase Completada: <b><span style="color: #007095"><?php echo $fila[0]->estatus; ?></span></b></p>
         <table id="dataTable">
             <thead>
                 <tr>
@@ -71,7 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </tr>
                 <tr>
                     <td>Descripción:</td>
-                    <td>Fase:</td>
+                    <td>Fase Actual:</td>
                     <td>Tipo de Error:</td>
                 </tr>
             </thead>
@@ -146,7 +146,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 } else {
                     ?>
                     <tr>
-                        <td colspan="3">N/A</td>
+                        <td colspan="4">N/A</td>
                     </tr>
                     <?php
                 }
@@ -181,7 +181,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </tr>
             <tr>
                 <td>Descripción:</td>
-                <td>Fase:</td>
+                <td>Fase Actual:</td>
                 <td>Entregado:</td>
             </tr>
             </thead>
@@ -207,7 +207,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
             } else { ?>
                 <tr>
-                    <td colspan="2">N/A</td>
+                    <td colspan="3">N/A</td>
                 </tr>
             <?php
             }

@@ -72,8 +72,6 @@ class Voting_machine extends CI_Controller
                 $this->load->view('templates/header');
                 $this->load->view('templates/navigation', $data);
                 $this->load->view('test/detail_voting_machine', $dataVotingMachine);
-                echo("<script>console.log('aquiiiiiiiiiiiiiiiiiiiiiii');</script>");
-                
             }
         } else {
             $data = $this->data;

@@ -112,6 +112,14 @@ class Contingencia extends CI_Controller
     public function liberar()
     {
         $data = new stdClass();
+        if ($this->form_validation->run() === TRUE ) {
+            if(!$this->input->post('reemplazo')){
+                $data->error = "Por favor seleccione un remplazo para liberarlo";
+                // Redirect
+                $this->$this->consulta();
+
+            }
+        } else {
         $reemplazos = $this->input->post('reemplazo');
         $reemplazos_separado_por_comas = implode(",", $reemplazos);
         $fechafin = date('Y-m-d H:i:s');
@@ -124,6 +132,7 @@ class Contingencia extends CI_Controller
             $this->load->view('contingencia/search_voting_machine');
             $this->load->view('templates/footer');
         }
+    }
 
     public function cancelar()
     {
