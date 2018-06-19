@@ -90,10 +90,13 @@ class Contingencia extends CI_Controller
                 'contingencia' => $contingencia
             );
 
-            if ($result != null) {
-                if ($contingencia == NULL) {
-                    $data->error = "No hay reemplazos disponibles para está Máquina de Votación.";
-                }
+            if ($contingencia === null) {
+                $data->error = "No hay reemplazos disponibles para está Máquina de Votación.";
+                $this->load->view('templates/header');
+                $this->load->view('templates/navigation', $data);
+                $this->load->view('contingencia/search_voting_machine');
+                $this->load->view('templates/footer');
+            } else if ($result != null) {
                 $this->load->view('templates/header');
                 $this->load->view('templates/navigation', $data);
                 $this->load->view('contingencia/detail_voting_machine', $dataVotingMachine);
@@ -112,21 +115,14 @@ class Contingencia extends CI_Controller
     public function liberar()
     {
         $data = new stdClass();
-        if ($this->form_validation->run() === TRUE ) {
-            if(!$this->input->post('reemplazo')){
-                $data->error = "Por favor seleccione un remplazo para liberarlo";
-                // Redirect
-                $this->$this->consulta();
-
-            }
-        } else {
         $reemplazos = $this->input->post('reemplazo');
-        $reemplazos_separado_por_comas = implode(",", $reemplazos);
-        $fechafin = date('Y-m-d H:i:s');
-        $result = $this->Contingencia_model->liberarReemplazos($reemplazos_separado_por_comas, $fechafin);
-        if ($result) {
-                $data->success = "Reemplazos liberados éxitosamente";
-        }
+        if ($reemplazos != null) {
+            $reemplazos_separado_por_comas = implode(",", $reemplazos);
+            $fechafin = date('Y-m-d H:i:s');
+            $result = $this->Contingencia_model->liberarReemplazos($reemplazos_separado_por_comas, $fechafin);
+            if ($result) {
+                    $data->success = "Reemplazos liberados éxitosamente";
+            }
             $this->load->view('templates/header');
             $this->load->view('templates/navigation', $data);
             $this->load->view('contingencia/search_voting_machine');

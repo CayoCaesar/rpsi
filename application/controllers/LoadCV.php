@@ -129,15 +129,10 @@ class LoadCV extends CI_Controller
             
             // Creamos una tabla temporal para cargar los archivos
             $this->MaquinaVotacion_model->createTablepaymentsTem($tablename);
-            
-          
+
             log_message('info', 'Loadcv|do_upload|inicio recorrido archivo cargado');
             
             for ($row = 2; $row <= $highestRow; $row++){
-                
-              
-                        
-                    
                     $fila = array(
                         "codigo_estado" =>$sheet->getCell("A".$row),
                         "estado" =>$sheet->getCell("B".$row),
@@ -164,7 +159,6 @@ class LoadCV extends CI_Controller
             log_message('info', 'LoadCV|do_upload|fin recorrido archivo cargado');
             
             // cerramos el archivo
-     
             
             // eliminamos el archivo cargado
             unlink($this->upload->data('file_path') . $this->upload->data('file_name'));

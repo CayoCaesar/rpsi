@@ -176,7 +176,6 @@ class Voting_machine extends CI_Controller
 
         if ($contingencia != null){
             $data->stop_process = true;
-            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
         }else {
             $data->stop_process = false;
         }
@@ -221,6 +220,13 @@ class Voting_machine extends CI_Controller
             $data->error = "la m&aacute;quina ya se ecuentra selccionada por otro usuario.";
             $this->data = $data;
             $this->index();
+        } else if ($contingencia != null) {
+            $data = new stdClass();
+            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
+            $this->load->view('templates/header');
+            $this->load->view('templates/navigation', $data);
+            $this->load->view('test/search_voting_machine');
+            $this->load->view('templates/footer');
         } else {
             if ($this->UsuarioMaquina_model->getusuarioMaquina($usuariomaquina) == 0) {
                 // marcamos la mesa como seleccionada para el usuario
@@ -355,7 +361,6 @@ class Voting_machine extends CI_Controller
 
         if ($contingencia != null){
             $data->stop_process = true;
-            $data->error = "Reemplazos pendientes para está máquina de votación, deben ser liberados para continuar con el proceso de pruebas.";
         } else {
             $data->stop_process = false;
         }

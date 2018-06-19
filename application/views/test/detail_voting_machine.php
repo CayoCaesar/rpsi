@@ -34,7 +34,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name = "mesa">
                     <input id="btnEnviar" class="button small right alert" value="Descargar Reporte" type="submit"onclick="this.form.action = '<?=base_url()?>index.php/report/pdf_gen'; this.form.method='POST'">
                     <input id="btnEnviar" class="button small right" value="Aceptar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
-            	<?php }else{?>
+            	<?php } else { ?>
                     <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/voting_machine/cancelar'">
                     <input id="btnEnviar" class="button small right" value="Aceptar" type="submit">
                 <?php }?>

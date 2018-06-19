@@ -22,7 +22,7 @@
             }
         ?>
 
-        <?= form_open('/contingencia/liberar') ?>
+        <form action="http://localhost/rpsi/index.php/contingencia/liberar" method="post" onsubmit="return atleast_onecheckbox(event)" >
             <div class="large-12 medium-4 columns">
                 <label>Centro de votaci&oacute;n</label>
                 <input type="text" placeholder="" name="centrovotacion" id="centrovotacion" disabled value="<?= $centrovotacion; ?>"/>
@@ -59,7 +59,7 @@
                         ?>
                             <tr>
                                 <td><?php echo $row->reemplazo ?></td>
-                                <td><input type='checkbox' name='reemplazo[]' id="<?= $row->id ?>" value='<?= $row->id ?>' checked /></td>
+                                <td><input type='checkbox' name='reemplazo[]' id="<?= $row->id ?>" value='<?= $row->id ?>' /></td>
                             </tr>
                         <?php
                             }
@@ -75,7 +75,6 @@
             ?>
 
             <div class="small-12 column text-right buttonPanel">
-                <input id="btnCloseModalEditor" class="button small right alert" value="Cancelar" type="submit" onclick="this.form.action = '<?=base_url()?>index.php/contingencia/cancelar'">
                 <?php
                     if (isset($contingencia)) {
                 ?>
@@ -84,7 +83,20 @@
                     }
                 ?>
             </div>
-        <?= form_close() ?>
+        </form>
 
     </div>
 </div>
+
+<script>
+    function atleast_onecheckbox(e) {
+        if ($("input[type=checkbox]:checked").length === 0) {
+            e.preventDefault();
+            var title = "¡ERROR!";
+            var content = "si quieres continuar debes seleccionar al menos un reemplazo para entregar";
+            var type = 2;
+            toastMessage(title, content, type, null);
+            return false;
+        }
+    }
+</script>
