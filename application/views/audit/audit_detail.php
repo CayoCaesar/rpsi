@@ -21,7 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
         }
 
-        if ($consulta_auditoria_status != null) {
+        if ($fila[0]->estatus == "AUDITADA") {
             $auditoria_status = true;
         } else {
             $auditoria_status = false;
@@ -49,9 +49,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         <?= form_open('/audit/procesar') ?>
         <input type="hidden" value="<?= $fila[0]->id; ?>" id="id" name="id">
-        <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion"
-               name="codigo_centrovotacion">
+        <input type="hidden" value="<?= $fila[0]->codigo_centrovotacion; ?>" id="codigo_centrovotacion" name="codigo_centrovotacion">
         <input type="hidden" value="<?= $fila[0]->mesa; ?>" id="mesa" name="mesa">
+        <input type="hidden" value="<?= $fila[0]->estatus; ?>" id="estatus"  name="estatus">
         <h3> Auditor&iacute;a</h3>
         <div class="field small-12 columns">
             <?php
@@ -64,7 +64,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         }
                         $flag = $item->id_cargo;
                         echo "<h4> - Cargo: $item->cargo </h4>";
-                        if (!$auditoria_status) {
+                        if ($auditoria_status) {
                             echo "<select id='$item->id_opcion_boleta' name='$item->id_opcion_boleta' disabled>";
                             echo "<option selected='selected' value=''>Seleccione</option>";
                             //echo "<option value='$item->id_opcion_boleta'>$item->candidato - $item->organizacion_politica</option>";
@@ -84,7 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ?>
         </div>
 
-        <?php if ($auditoria_status) { ?>
+        <?php if (!$auditoria_status) { ?>
             <div class="small-1 column right buttonPanel<br>">
                 <input id="btnEnviar" class="button small right" value="Registrar" type="submit">
             </div>
@@ -122,11 +122,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
 
         <div class="small-12 column text-right buttonPanel">
-            <?php if ($auditoria_status) { ?>
+            <?php if (!$auditoria_status) { ?>
                 <input id="btnEnviar" class="button small" value="Finalizar Auditor&iacute;a" type="submit"
                        onclick="this.form.action = '<?= base_url() ?>index.php/audit/finishAudit'">
+            <?php } else { ?>
+            <input id="btnEnviar" class="button small right warning" value="Descargar Auditoria" type="submit"
+                   onclick="this.form.action = '<?= base_url() ?>index.php/report/pdf_gen_auditoria'">
             <?php } ?>
-            <input id="btnEnviar" class="button small right alert" value="Cancelar" type="submit"
+            <input id="btnEnviar" class="button small right alert" value="Volver" type="submit"
                    onclick="this.form.action = '<?= base_url() ?>index.php/audit/consultar'">
         </div>
     </div>

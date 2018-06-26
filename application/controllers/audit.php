@@ -58,27 +58,21 @@ class audit extends CI_Controller{
                 $id_maquina = $maquina_votacion->id;
 
                 $consulta_cargo_candidato_partido = $this->Audit_model->getCargoCandidatoParido($centrovotacion, $mesa);
-
                 $consulta_votos_auditoria = $this->Audit_model->getVotesAuditByMv($id_maquina);
 
-                $consulta_auditoria_status = $this->Audit_model->getAuditStatus($id_maquina);
-                if ($consulta_auditoria_status == null) {
+                $estatus_mv = $maquina_votacion->estatus;
+                if ($estatus_mv == "AUDITADA") {
                     $data_alert->error = "la m&aacute;quina ya finalizó la fase de auditoria";
                 }
 
                 $data = array(
                     'consulta' => $result,
                     'consulta_cargo_candidato_partido' => $consulta_cargo_candidato_partido,
-                    'consulta_votos_auditoria' => $consulta_votos_auditoria,
-                    'consulta_auditoria_status' => $consulta_auditoria_status
+                    'consulta_votos_auditoria' => $consulta_votos_auditoria
                 );
 
                 if ($result != null) {
                     if ($maquina_votacion->estatus == "TRANSMITIDA" || $maquina_votacion->estatus == "AUDITADA") {
-                        $this->MaquinaVotacion_model->updateMvEstatusAuditoria($centrovotacion, $mesa);
-                        if ($maquina_votacion->estatus == "AUDITADA") {
-                            $data_alert->error = "La M&aacute;quina ya fue Auditada y no puede volver a Auditarse";
-                        }
                         $this->load->view('templates/header');
                         $this->load->view('templates/navigation', $data_alert);
                         $this->load->view('audit/audit_detail', $data);
@@ -104,13 +98,13 @@ class audit extends CI_Controller{
     
     public function consultada()
     {
-        $data = new stdClass();
-        
         if ($this->input->post('id') != null) {
             $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
         } else {
             $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
         }
+
+        $data = new stdClass();
         $data->consulta = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
 
         $centrovotacion = $this->input->post('codigo_centrovotacion');
@@ -122,36 +116,20 @@ class audit extends CI_Controller{
         $consulta_votos_auditoria = $this->Audit_model->getVotesAuditByMv($this->input->post('id'));
         $data->consulta_votos_auditoria = $consulta_votos_auditoria;
 
-        $consulta_auditoria_status = $this->Audit_model->getAuditStatus($this->input->post('id'));
+        $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
+        $maquina_votacion = $result->row();
+        $estatus_mv = $maquina_votacion->estatus;
 
-        if ($consulta_auditoria_status == null) {
+        var_dump($estatus_mv);
+
+        if ($estatus_mv == "AUDITADA") {
             $data->error = "la m&aacute;quina ya finalizó la fase de auditoria";
         }
-        $data->consulta_auditoria_status = $consulta_auditoria_status;
-        
-        $data->errormv = $this->Error_model->getError();
-        $data->tiporeemplazo = $this->TipoReemplazo_model->getTipoReemplazo();
-        $fila = $data->consulta->result();
-        $usuariomaquina = array();
-        $usuariomaquina["id_usuario"] = $_SESSION['id'];
-        $usuariomaquina["id_maquina"] = $fila[0]->id;
-        
-        if ($this->UsuarioMaquina_model->getmaquina($usuariomaquina) > 0) {
-            $data = new stdClass();
-            $data->error = "la m&aacute;quina ya se ecuentra selccionada por otro usuario.";
-            $this->data = $data;
-            $this->index();
-        } else {
-            if ($this->UsuarioMaquina_model->getusuarioMaquina($usuariomaquina) == 0) {
-                // marcamos la mesa como seleccionada para el usuario
-                $this->UsuarioMaquina_model->selccionarMesa($usuariomaquina);
-            }
-        }
+
         $this->load->view('templates/header');
         $this->load->view('templates/navigation', $data);
         $this->load->view('audit/audit_detail', $data);
         $this->load->view('templates/footer');
-
     }
 
     public function procesar()
@@ -167,7 +145,7 @@ class audit extends CI_Controller{
         $current = $currentTemp[0]["MAX(cod_voto)"] + 1;
 
         foreach ($_POST as $clave=>$valor) {
-            if ($valor !== "" && $clave != "id" && $clave != "codigo_centrovotacion" && $clave != "mesa") {
+            if ($valor !== "" && $clave != "id" && $clave != "codigo_centrovotacion" && $clave != "mesa" && $clave != "estatus") {
                 $result =  $this->Audit_model->saveVotesAudit($current, $valor, $idmaquina, 0);
             }
         }
@@ -176,14 +154,9 @@ class audit extends CI_Controller{
 
     public function finishAudit()
     {
-        if ($this->input->post('id') != null) {
-            $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
-        } else {
-            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
-        }
-
-        $result =  $this->Audit_model->finishAudit($idmaquina);
-
+        $centrovotacion = $this->input->post('codigo_centrovotacion');
+        $mesa = $this->input->post('mesa');
+        $this->MaquinaVotacion_model->updateMvEstatusAuditoria($centrovotacion, $mesa);
         $this->consultada();
     }
 }

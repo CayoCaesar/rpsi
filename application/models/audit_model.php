@@ -64,11 +64,11 @@ class Audit_model extends CI_Model {
         
     }
 
-    public function saveVotesAudit($cod_voto, $id_boleta, $id_maquina, $finalizado) {
+    public function saveVotesAudit($cod_voto, $id_boleta, $id_maquina) {
 
-        $result=$this->db->query("INSERT INTO voto (cod_voto, id_opcion_boleta, id_maquina, finalizado) 
-                                  VALUES ('" . $cod_voto . "', '" . $id_boleta . "', '" . $id_maquina . "', '" . $finalizado . "') 
-                                  ON DUPLICATE KEY UPDATE cod_voto = '" . $cod_voto . "', id_opcion_boleta = '" . $id_boleta . "', id_maquina = '" . $id_maquina . "', finalizado = '" . $finalizado . "'");
+        $result=$this->db->query("INSERT INTO voto (cod_voto, id_opcion_boleta, id_maquina) 
+                                  VALUES ('" . $cod_voto . "', '" . $id_boleta . "', '" . $id_maquina . "') 
+                                  ON DUPLICATE KEY UPDATE cod_voto = '" . $cod_voto . "', id_opcion_boleta = '" . $id_boleta . "', id_maquina = '" . $id_maquina . "'");
 
         if ($result){
             return $result;
@@ -99,24 +99,22 @@ class Audit_model extends CI_Model {
         }
     }
 
-    public function finishAudit($id_maquina) {
+    public function getVotesAuditReportPDFByMv($id_maquina) {
 
-        $result=$this->db->query("UPDATE voto
-                                    SET finalizado = '1'
-                                    WHERE id_maquina = '" . $id_maquina . "'");
-        if ($result) {
-            return $result;
-        } else {
-            return null;
-        }
-    }
-
-    public function getAuditStatus($id_maquina) {
-
-        $result=$this->db->query("SELECT finalizado
-                                    FROM voto
-                                    WHERE finalizado = '0' and id_maquina = '" . $id_maquina . "'");
-
+        $result=$this->db->query("SELECT 
+                                 COUNT(*) as num_votos,
+                                 cargo.descripcion as cargo,
+                                 organizacion_politica.siglas AS organizacion_politica,
+                                 candidato.candidato AS candidato
+                                FROM voto
+                                INNER JOIN opcion_boleta ON id_opcion_boleta = opcion_boleta.id
+                                INNER JOIN postulacion ON opcion_boleta.id_postulacion = postulacion.id
+                                INNER JOIN cargo ON postulacion.id_cargo = cargo.id
+                                INNER JOIN candidato ON postulacion.id_candidato = candidato.id
+                                INNER JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica = organizacion_politica.id
+                                WHERE id_maquina = '" . $id_maquina . "'
+                                GROUP BY organizacion_politica.siglas
+                                order by cargo.descripcion, candidato.candidato");
         if ($result->num_rows()>0) {
             return $result;
         } else {
@@ -137,7 +135,7 @@ class Audit_model extends CI_Model {
                                     INNER JOIN cargo ON postulacion.id_cargo=cargo.id
                                     INNER JOIN candidato ON postulacion.id_candidato=candidato.id
                                     INNER JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica=organizacion_politica.id
-                                    WHERE codigo_centrovotacion='010101001' AND mesa='1'
+                                    WHERE codigo_centrovotacion='" . $codigo_centrovotacion . "' AND mesa='" . $mesa . "'
                                     ORDER BY opcion_boleta.orden ASC");
 
         if ($result->num_rows()>0) {

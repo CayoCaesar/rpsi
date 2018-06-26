@@ -42,6 +42,7 @@ class Report extends CI_Controller
         $this->load->model('MaquinaVotacion_model');
         $this->load->model('Error_model');
         $this->load->model('Contingencia_model');
+        $this->load->model('Audit_model');
     }
 
     public function index()
@@ -197,6 +198,47 @@ class Report extends CI_Controller
         //this the the PDF filename that user will get to download
         $time = time();
         $pdfFilePath = "reporte_pruebas_mv_". $centrovotacion . "_" . $mesa . ".pdf";
+
+        //load mPDF library
+        $this->load->library('m_pdf');
+
+        //generate the PDF from the given html
+        $this->m_pdf->pdf->WriteHTML($html);
+
+        //download it.
+        $this->m_pdf->pdf->Output($pdfFilePath, "D");
+    }
+
+    public function pdf_gen_auditoria()
+    {
+        $data = new stdClass();
+
+        if ($this->input->post('id') != null) {
+            $idmaquina = $this->input->post('id'); // anteriormente se obtenía el valor por la constante post, sin embargo se perdía el valor cuando se actualizaba la páginación.
+        } else {
+            $idmaquina = $this->UsuarioMaquina_model->getMaquinaIDByUser($_SESSION['id']);
+        }
+        $result = $this->MaquinaVotacion_model->getDetailTestVotingMachine($idmaquina);
+
+        $centrovotacion = $this->input->post('codigo_centrovotacion');
+        $mesa = $this->input->post('mesa');
+
+        $consulta_votos_auditoria = $this->Audit_model->getVotesAuditReportPDFByMv($this->input->post('id'));
+        echo("<script>console.log('hola: ".json_encode($consulta_votos_auditoria)."');</script>");
+
+        $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);
+
+        $dataVotingMachine = array(
+            'consulta' => $result,
+            'consulta_votos_auditoria' => $consulta_votos_auditoria,
+            'user' => $operador
+        );
+        //load the view and saved it into $html variable
+        $html=$this->load->view('report/report_audit_pdf', $dataVotingMachine, true);
+
+        //this the the PDF filename that user will get to download
+        $time = time();
+        $pdfFilePath = "reporte_auditoria_mv_". $centrovotacion . "_" . $mesa . ".pdf";
 
         //load mPDF library
         $this->load->library('m_pdf');
