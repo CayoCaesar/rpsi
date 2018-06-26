@@ -138,6 +138,61 @@ class MaquinaVotacion_model extends CI_Model
         }
     }
 
+    public function updateMvEstatusAuditoria($codico_centrovotacion, $mesa)
+    {
+        $this->db->trans_start();
+        $this->db->query("UPDATE maquina_votacion SET 
+                            id_estatus_maquina='7'
+                            WHERE
+                            maquina_votacion.codigo_centrovotacion='". $codico_centrovotacion ."' AND maquina_votacion.mesa='". $mesa ."'");
+
+        $this->db->query("UPDATE proceso
+                            INNER JOIN maquina_votacion ON proceso.id_maquina_votacion=maquina_votacion.id
+                            SET id_fase='6'
+                            WHERE
+                            maquina_votacion.codigo_centrovotacion='". $codico_centrovotacion ."' AND maquina_votacion.mesa='". $mesa ."'");
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function truncateLoadTemplateData()
+    {
+        $this->db->trans_start();
+
+        $this->db->query("DELETE FROM usuario_maquina");
+
+        $this->db->query("DELETE FROM maquina_cargo");
+        $this->db->query("ALTER TABLE maquina_cargo AUTO_INCREMENT = 1");
+
+        $this->db->query("DELETE FROM voto");
+        $this->db->query("ALTER TABLE voto AUTO_INCREMENT = 1");
+
+        $this->db->query("DELETE FROM maquina_votacion");
+        $this->db->query("ALTER TABLE maquina_votacion AUTO_INCREMENT = 1");
+
+        $this->db->query("DELETE FROM proceso");
+        $this->db->query("ALTER TABLE proceso AUTO_INCREMENT = 1");
+
+        $this->db->query("DELETE FROM proceso_error");
+        $this->db->query("ALTER TABLE proceso_error AUTO_INCREMENT = 1");
+
+        $this->db->query("DELETE FROM proceso_reemplazo");
+        $this->db->query("ALTER TABLE proceso_reemplazo AUTO_INCREMENT = 1");
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function getTablepaymentsTem($table_name)
     {
         return $this->db->get($table_name);

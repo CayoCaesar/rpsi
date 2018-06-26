@@ -111,7 +111,7 @@ class LoadCV extends CI_Controller
             $this->load->view('templates/footer');
         } else {
             
-            // cargamos el arcivo
+            // cargamos el archivo
             $file = $this->upload->data('file_path') . $this->upload->data('file_name');
             
             $this->load->library('PHPExcel/Classes/PHPExcel');
@@ -183,13 +183,19 @@ class LoadCV extends CI_Controller
         $data = new stdClass();
         
         if (isset($_SESSION['table_temp_nom']) ) {
+
             $detalle =$this->MaquinaVotacion_model->getTablepaymentsTem($_SESSION['table_temp_nom']);
-            // $this->payments_model->insertPayment($this->input->post("descripcion"),$this->input->post("id_proyecto"),$this->input->post("id_gerencia"),$_SESSION['id'],$detalle);
-            $resultado =  $this->MaquinaVotacion_model->updateMv($detalle->result());
-            if ($resultado){
-                $data->success = 'Se ha Cargado con &Eacutexito el Archivo.';
-            }else{
-                $data->error = 'Ha acorrido un error inesperado, por favor intente de nuevo.';
+            $truncateLoadTemplateData =$this->MaquinaVotacion_model->truncateLoadTemplateData();
+            if ($truncateLoadTemplateData) {
+                // $this->payments_model->insertPayment($this->input->post("descripcion"),$this->input->post("id_proyecto"),$this->input->post("id_gerencia"),$_SESSION['id'],$detalle);
+                $resultado =  $this->MaquinaVotacion_model->updateMv($detalle->result());
+                if ($resultado){
+                    $data->success = 'Se ha Cargado con &Eacutexito el Archivo.';
+                }else{
+                    $data->error = 'Ha acorrido un error inesperado, por favor intente de nuevo.';
+                }
+            } else {
+                $data->error = 'Ha acorrido un error inesperado vaciando las tablas Por favor intente de nuevo.';
             }
         }else{
             $data->error = 'Ha acorrido un error inesperado, tabla origen no encontrada. Por favor intente de nuevo.';
