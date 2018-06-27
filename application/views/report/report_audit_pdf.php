@@ -64,6 +64,10 @@
                 <td><?php echo $fila[0]->centro_votacion; ?></td>
             </tr>
             <tr>
+                <td>Código del Centro:</td>
+                <td><?php echo $fila[0]->codigo_centrovotacion; ?></td>
+            </tr>
+            <tr>
                 <td>Mesa:</td>
                 <td><?php echo $fila[0]->mesa; ?></td>
             </tr>

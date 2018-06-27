@@ -112,11 +112,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     echo "</thead>";
                     echo "<tbody>";
                 }
-                echo "<tr>";
-                echo "<td>$item->cargo</td>";
-                echo "<td>$item->candidato</td>";
-                echo "<td>$item->organizacion_politica</td>";
-                echo "</tr>";
+
+                if ($item->cargo == null && $item->candidato == null && $item->organizacion_politica == null) {
+                    echo "<tr>";
+                    echo "<td colspan='3'>NULL</td>";
+                    echo "</tr>";
+                } else {
+                    echo "<tr>";
+                    echo "<td>$item->cargo</td>";
+                    echo "<td>$item->candidato</td>";
+                    echo "<td>$item->organizacion_politica</td>";
+                    echo "</tr>";
+                }
             }
             echo "</tbody>";
             echo "</table>";

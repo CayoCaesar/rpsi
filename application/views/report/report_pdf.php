@@ -56,6 +56,10 @@
                         <td><?php echo $fila[0]->centro_votacion; ?></td>
                     </tr>
                     <tr>
+                        <td>Código del Centro:</td>
+                        <td><?php echo $fila[0]->codigo_centrovotacion; ?></td>
+                    </tr>
+                    <tr>
                         <td>Mesa:</td>
                         <td><?php echo $fila[0]->mesa; ?></td>
                     </tr>
@@ -126,8 +130,8 @@
                         <td colspan="4">Fase de Votación:</td>
                     </tr>
                     <tr>
-                        <td>Cédulas:</td>
-                        <td>Cédulas:</td>
+                        <td>Nacionalidad:</td>
+                        <td>Cédula:</td>
                         <td>Nombre:</td>
                         <td>Apellido:</td>
                     </tr>

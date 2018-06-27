@@ -184,6 +184,8 @@ class MaquinaVotacion_model extends CI_Model
         $this->db->query("DELETE FROM proceso_reemplazo");
         $this->db->query("ALTER TABLE proceso_reemplazo AUTO_INCREMENT = 1");
 
+        $this->db->query("UPDATE votantes SET voto = 0 WHERE voto = 1");
+
         $this->db->trans_complete();
 
         if ($this->db->trans_status() === FALSE) {
@@ -380,6 +382,7 @@ class MaquinaVotacion_model extends CI_Model
 
         $this->db->select("codigo_centrovotacion, mesa");
         $this->db->where("id",$idmaquina);
+
         $consulta = $this->db->get("maquina_votacion");
         $geografico = $consulta->result();
 
@@ -393,6 +396,11 @@ class MaquinaVotacion_model extends CI_Model
         $this->db->select("id");
         $this->db->where("id_maquina_votacion",$idmaquina);
         $procesos = $this->db->get("proceso");
+
+        //borramos los votos registrados para esa mv
+        $this->db->query("DELETE FROM voto WHERE id_maquina = '" . $idmaquina . "'");
+        $this->db->query("ALTER TABLE voto AUTO_INCREMENT = 1");
+
 
         foreach ($procesos->result() as $proceso){
            

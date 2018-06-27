@@ -111,7 +111,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <thead>
                 <tr>
                     <td>Nacionalidad</td>
-                    <td>Cedulas</td>
+                    <td>Cédula</td>
                     <td>Nombre</td>
                     <td>Apellido</td>
                     <td>Estatus Votaci&oacute;n</td>

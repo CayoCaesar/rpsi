@@ -96,11 +96,11 @@ class Audit_model extends CI_Model {
                                 candidato.candidato AS candidato,
                                 organizacion_politica.organizacion_politica AS organizacion_politica
                                 FROM voto
-                                INNER JOIN opcion_boleta ON id_opcion_boleta = opcion_boleta.id
-                                INNER JOIN postulacion ON opcion_boleta.id_postulacion = postulacion.id
-                                INNER JOIN cargo ON postulacion.id_cargo = cargo.id
-                                INNER JOIN candidato ON postulacion.id_candidato = candidato.id
-                                INNER JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica = organizacion_politica.id
+                                LEFT JOIN opcion_boleta ON id_opcion_boleta = opcion_boleta.id
+                                LEFT JOIN postulacion ON opcion_boleta.id_postulacion = postulacion.id
+                                LEFT JOIN cargo ON postulacion.id_cargo = cargo.id
+                                LEFT JOIN candidato ON postulacion.id_candidato = candidato.id
+                                LEFT JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica = organizacion_politica.id
                                 WHERE id_maquina = '" . $id_maquina . "'");
         if ($result->num_rows()>0) {
             return $result;
