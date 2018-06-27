@@ -26,6 +26,18 @@
             $votos_auditoria = $consulta_votos_auditoria->result();
         }
 
+        if (!is_null($consulta_votos_totales)) {
+            $votos_auditoria_totales = $consulta_votos_totales[0]["COUNT(*)"];
+        }
+
+        if (!is_null($consulta_votos_nulos)) {
+            $votos_auditoria_nulos = $consulta_votos_nulos[0]["COUNT(*)"];
+        }
+
+        if (!is_null($consulta_votos_validos)) {
+            $votos_auditoria_validos = $consulta_votos_validos[0]["COUNT(*)"];
+        }
+
         $operador = $user->result();
         ?>
 
@@ -103,6 +115,30 @@
                 echo "</tbody>";
                 echo "</table>";
             }
+        ?>
+
+        <?php
+            echo "<table id='dataTable'>";
+            echo "<thead>";
+            echo "<tr>";
+            echo "<td colspan='2' style='color: #007095'>Total de Votos</td>";
+            echo "</tr>";
+            echo "</thead>";
+            echo "<tbody>";
+            echo "<tr>";
+            echo "<td>TOTAL VOTOS</td>";
+            echo "<td>$votos_auditoria_totales</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td>VOTOS NULOS</td>";
+            echo "<td>$votos_auditoria_nulos</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td>VOTOS VALIDOS</td>";
+            echo "<td>$votos_auditoria_validos</td>";
+            echo "</tr>";
+            echo "</tbody>";
+            echo "</table>";
         ?>
     </div>
 </div>

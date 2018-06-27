@@ -224,13 +224,19 @@ class Report extends CI_Controller
         $mesa = $this->input->post('mesa');
 
         $consulta_votos_auditoria = $this->Audit_model->getVotesAuditReportPDFByMv($this->input->post('id'));
-        echo("<script>console.log('hola: ".json_encode($consulta_votos_auditoria)."');</script>");
+
+        $consulta_votos_totales = $this->Audit_model->getTotalVotes($this->input->post('id'));
+        $consulta_votos_nulos = $this->Audit_model->getTotalVotesNull($this->input->post('id'));
+        $consulta_votos_validos = $this->Audit_model->getTotalVotesValides($this->input->post('id'));
 
         $operador = $this->Contingencia_model->getEmpleado($_SESSION["id"]);
 
         $dataVotingMachine = array(
             'consulta' => $result,
             'consulta_votos_auditoria' => $consulta_votos_auditoria,
+            'consulta_votos_totales' => $consulta_votos_totales->result_array(),
+            'consulta_votos_nulos' => $consulta_votos_nulos->result_array(),
+            'consulta_votos_validos' => $consulta_votos_validos->result_array(),
             'user' => $operador
         );
         //load the view and saved it into $html variable

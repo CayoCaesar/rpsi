@@ -120,8 +120,6 @@ class audit extends CI_Controller{
         $maquina_votacion = $result->row();
         $estatus_mv = $maquina_votacion->estatus;
 
-        var_dump($estatus_mv);
-
         if ($estatus_mv == "AUDITADA") {
             $data->error = "la m&aacute;quina ya finalizó la fase de auditoria";
         }
@@ -146,7 +144,12 @@ class audit extends CI_Controller{
 
         foreach ($_POST as $clave=>$valor) {
             if ($valor !== "" && $clave != "id" && $clave != "codigo_centrovotacion" && $clave != "mesa" && $clave != "estatus") {
-                $result =  $this->Audit_model->saveVotesAudit($current, $valor, $idmaquina, 0);
+
+                if ($valor == 0) {
+                    $result =  $this->Audit_model->saveVotesAuditNull($current, null, $idmaquina, 0);
+                } else {
+                    $result =  $this->Audit_model->saveVotesAudit($current, $valor, $idmaquina, 1);
+                }
             }
         }
         $this->consultada();

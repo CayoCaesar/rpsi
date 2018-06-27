@@ -67,11 +67,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         if ($auditoria_status) {
                             echo "<select id='$item->id_opcion_boleta' name='$item->id_opcion_boleta' disabled>";
                             echo "<option selected='selected' value=''>Seleccione</option>";
+                            echo "<option value='0'>VOTO NULL</option>";
                             //echo "<option value='$item->id_opcion_boleta'>$item->candidato - $item->organizacion_politica</option>";
                             //echo "</select>";
                         } else {
                             echo "<select id='$item->id_opcion_boleta' name='$item->id_opcion_boleta'>";
                             echo "<option selected='selected' value=''>Seleccione</option>";
+                            echo "<option value='0'>VOTO NULL</option>";
                             //echo "<option value='$item->id_opcion_boleta'>$item->candidato - $item->organizacion_politica</option>";
                             //echo "</select>";
                         }
@@ -89,11 +91,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input id="btnEnviar" class="button small right" value="Registrar" type="submit">
             </div>
         <?php } ?>
-
+        <div class="field small-12 columns">
         <h3>Lista de votos</h3>
         <?php
         if (isset($votos_auditoria)) {
-            $flag = 0; $i=0;
+            $flag=0; $i=0;
             foreach ($votos_auditoria as $item) {
                 if ($flag != $item->cod_voto) {
                     if ($flag != 0){
@@ -120,6 +122,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "</table>";
         }
         ?>
+        </div>
 
         <div class="small-12 column text-right buttonPanel">
             <?php if (!$auditoria_status) { ?>

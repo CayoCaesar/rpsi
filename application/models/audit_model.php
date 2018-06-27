@@ -64,12 +64,22 @@ class Audit_model extends CI_Model {
         
     }
 
-    public function saveVotesAudit($cod_voto, $id_boleta, $id_maquina) {
+    public function saveVotesAuditNull($cod_voto, $id_boleta, $id_maquina, $estatus) {
 
-        $result=$this->db->query("INSERT INTO voto (cod_voto, id_opcion_boleta, id_maquina) 
-                                  VALUES ('" . $cod_voto . "', '" . $id_boleta . "', '" . $id_maquina . "') 
-                                  ON DUPLICATE KEY UPDATE cod_voto = '" . $cod_voto . "', id_opcion_boleta = '" . $id_boleta . "', id_maquina = '" . $id_maquina . "'");
+        $result=$this->db->query("INSERT INTO voto (cod_voto, id_opcion_boleta, id_maquina, estatus) 
+                                  VALUES (" . $cod_voto . ", null, " . $id_maquina . ", 0 )");
+        if ($result){
+            return $result;
+        }else {
+            return null;
+        }
 
+    }
+
+    public function saveVotesAudit($cod_voto, $id_boleta, $id_maquina, $estatus) {
+
+        $result=$this->db->query("INSERT INTO voto (cod_voto, id_opcion_boleta, id_maquina, estatus) 
+                                  VALUES ('" . $cod_voto . "', '" . $id_boleta . "', '" . $id_maquina . "', '" . $estatus . "')");
         if ($result){
             return $result;
         }else {
@@ -81,17 +91,17 @@ class Audit_model extends CI_Model {
     public function getVotesAuditByMv($id_maquina) {
 
         $result=$this->db->query("SELECT
-                                    voto.cod_voto,
-                                    cargo.descripcion AS cargo,
-                                    candidato.candidato AS candidato,
-                                    organizacion_politica.organizacion_politica AS organizacion_politica
-                                    FROM voto
-                                    INNER JOIN opcion_boleta ON id_opcion_boleta = opcion_boleta.id
-                                    INNER JOIN postulacion ON opcion_boleta.id_postulacion = postulacion.id
-                                    INNER JOIN cargo ON postulacion.id_cargo = cargo.id
-                                    INNER JOIN candidato ON postulacion.id_candidato = candidato.id
-                                    INNER JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica = organizacion_politica.id
-                                    WHERE id_maquina = '" . $id_maquina . "'");
+                                voto.cod_voto,
+                                cargo.descripcion AS cargo,
+                                candidato.candidato AS candidato,
+                                organizacion_politica.organizacion_politica AS organizacion_politica
+                                FROM voto
+                                INNER JOIN opcion_boleta ON id_opcion_boleta = opcion_boleta.id
+                                INNER JOIN postulacion ON opcion_boleta.id_postulacion = postulacion.id
+                                INNER JOIN cargo ON postulacion.id_cargo = cargo.id
+                                INNER JOIN candidato ON postulacion.id_candidato = candidato.id
+                                INNER JOIN organizacion_politica ON opcion_boleta.id_organizacion_politica = organizacion_politica.id
+                                WHERE id_maquina = '" . $id_maquina . "'");
         if ($result->num_rows()>0) {
             return $result;
         } else {
@@ -151,6 +161,45 @@ class Audit_model extends CI_Model {
                                     FROM voto
                                     INNER JOIN maquina_votacion on voto.id_maquina=maquina_votacion.id
                                     WHERE voto.id_maquina='" . $id_maquina . "'");
+
+        if ($result->num_rows()>0) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
+    public function getTotalVotes($id_maquina) {
+
+        $result=$this->db->query("SELECT COUNT(*)
+                                FROM voto
+                                WHERE id_maquina = '" . $id_maquina . "'");
+
+        if ($result->num_rows()>0) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
+    public function getTotalVotesNull($id_maquina) {
+
+        $result=$this->db->query("SELECT COUNT(*)
+                                FROM voto
+                                WHERE id_maquina = '" . $id_maquina . "' AND estatus = '0'");
+
+        if ($result->num_rows()>0) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
+    public function getTotalVotesValides($id_maquina) {
+
+        $result=$this->db->query("SELECT COUNT(*)
+                                FROM voto
+                                WHERE id_maquina = '" . $id_maquina . "' AND estatus = '1'");
 
         if ($result->num_rows()>0) {
             return $result;
