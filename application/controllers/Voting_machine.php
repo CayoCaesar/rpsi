@@ -454,7 +454,12 @@ class Voting_machine extends CI_Controller
                     $idproxEstatus = 6;
                     $fase = 5;
                     break;
-                
+                case "TRANSMITIDA":
+                    $codigo = $codigo->codigo_transmision;
+                    $proxEstatus = "Auditada";
+                    $idproxEstatus = 7;
+                    $fase = 6;
+                    break;
             }
             // validamos el c�digo de Validaci�n
             // Si no seleciono un error el c�digo de validaci�n es requerido

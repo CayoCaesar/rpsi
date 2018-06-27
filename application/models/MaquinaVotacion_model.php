@@ -338,7 +338,6 @@ class MaquinaVotacion_model extends CI_Model
                                         FROM maquina_votacion mv, estatus_maquina em
                                         WHERE mv.id_estatus_maquina=em.id
                                         AND mv.id='" . $id . "'");
-        echo("<script>console.log('hola: ".json_encode($id)."');</script>");
         
         if ($result->num_rows()>0){
             

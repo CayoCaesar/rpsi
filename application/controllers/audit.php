@@ -54,22 +54,27 @@ class audit extends CI_Controller{
                 $mesa = $campos[1];
 
                 $result = $this->MaquinaVotacion_model->getDetailVotingMachine($centrovotacion, $mesa);
-                $maquina_votacion = $result->row();
-                $id_maquina = $maquina_votacion->id;
 
-                $consulta_cargo_candidato_partido = $this->Audit_model->getCargoCandidatoParido($centrovotacion, $mesa);
-                $consulta_votos_auditoria = $this->Audit_model->getVotesAuditByMv($id_maquina);
+                if ($result != null) {
 
-                $estatus_mv = $maquina_votacion->estatus;
-                if ($estatus_mv == "AUDITADA") {
-                    $data_alert->error = "la m&aacute;quina ya finalizó la fase de auditoria";
+                    $maquina_votacion = $result->row();
+                    $id_maquina = $maquina_votacion->id;
+
+                    $consulta_cargo_candidato_partido = $this->Audit_model->getCargoCandidatoParido($centrovotacion, $mesa);
+                    $consulta_votos_auditoria = $this->Audit_model->getVotesAuditByMv($id_maquina);
+
+                    $estatus_mv = $maquina_votacion->estatus;
+                    if ($estatus_mv == "AUDITADA") {
+                        $data_alert->error = "la m&aacute;quina ya finalizó la fase de auditoria";
+                    }
+
+                    $data = array(
+                        'consulta' => $result,
+                        'consulta_cargo_candidato_partido' => $consulta_cargo_candidato_partido,
+                        'consulta_votos_auditoria' => $consulta_votos_auditoria
+                    );
+
                 }
-
-                $data = array(
-                    'consulta' => $result,
-                    'consulta_cargo_candidato_partido' => $consulta_cargo_candidato_partido,
-                    'consulta_votos_auditoria' => $consulta_votos_auditoria
-                );
 
                 if ($result != null) {
                     if ($maquina_votacion->estatus == "TRANSMITIDA" || $maquina_votacion->estatus == "AUDITADA") {
@@ -86,6 +91,7 @@ class audit extends CI_Controller{
                         $this->load->view('templates/footer');
                     }
                 } else {
+                    $data = new stdClass();
                     $data->error = "No se encontrar&oacute;n los datos consultados.";
                     $this->load->view('templates/header');
                     $this->load->view('templates/navigation', $data);
@@ -161,5 +167,13 @@ class audit extends CI_Controller{
         $mesa = $this->input->post('mesa');
         $this->MaquinaVotacion_model->updateMvEstatusAuditoria($centrovotacion, $mesa);
         $this->consultada();
+    }
+
+    public function index()
+    {
+        $this->load->view('templates/header');
+        $this->load->view('templates/navigation');
+        $this->load->view('audit/audit_consultar');
+        $this->load->view('templates/footer');
     }
 }

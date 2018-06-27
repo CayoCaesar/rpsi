@@ -133,7 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                    onclick="this.form.action = '<?= base_url() ?>index.php/report/pdf_gen_auditoria'">
             <?php } ?>
             <input id="btnEnviar" class="button small right alert" value="Volver" type="submit"
-                   onclick="this.form.action = '<?= base_url() ?>index.php/audit/consultar'">
+                   onclick="this.form.action = '<?= base_url() ?>index.php/audit/index'">
         </div>
     </div>
     <?= form_close() ?>

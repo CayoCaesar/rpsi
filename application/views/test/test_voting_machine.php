@@ -47,11 +47,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     $proxEstatus = "Transmisi&oacute;n";
                     $finalizado = true;
                     break;
+                case "AUDITADA":
+                    $proxEstatus = "Auditoria";
+                    $finalizado = true;
+                    break;
             }
         }
         ?>
 
-        <h3>M&aacute;quina de Votaci&oacute;n. Fase <?=$proxEstatus?></h3>
+        <h3>M&aacute;quina de Votaci&oacute;n. Fase <?php
+            if(isset($proxEstatus)){
+                echo "$proxEstatus";
+            }
+            ?></h3>
         <?= form_open('/voting_machine/procesar') ?>
         <input type="hidden" value="<?= $fila[0]->id; ?>" id="id" name = "id">
         <input type="hidden" value="<?= $fila[0]->estatus; ?>" id="estatusmv" name = "estatusmv">

@@ -258,7 +258,11 @@ class Report extends CI_Controller
 
     public function errors_mv() {
         $result = $this->MaquinaVotacion_model->getErrorsVotingMachine();
-        $errores = $result->result_array();
+        if ($result != null) {
+            $errores = $result->result_array();
+        } else {
+            $errores = null;
+        }
         $data = array(
             'consulta' => $errores
         );
@@ -270,74 +274,78 @@ class Report extends CI_Controller
 
     public function generar_excel(){
         $result = $this->MaquinaVotacion_model->getErrorsVotingMachine();
-        $errores = $result->result();
+        if ($result != null) {
+            $errores = $result->result();
+            if(count($errores) > 0){
 
-        if(count($errores) > 0){
+                //Cargamos la librería de excel.
+                $this->load->library('excel'); $this->excel->setActiveSheetIndex(0);
+                $this->excel->getActiveSheet()->setTitle('Errores');
 
-            //Cargamos la librería de excel.
-            $this->load->library('excel'); $this->excel->setActiveSheetIndex(0);
-            $this->excel->getActiveSheet()->setTitle('Errores');
+                //Contador de filas
+                $contador = 1;
 
-            //Contador de filas
-            $contador = 1;
+                //Le aplicamos ancho las columnas.
+                $this->excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
+                $this->excel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
+                $this->excel->getActiveSheet()->getColumnDimension('C')->setWidth(70);
+                $this->excel->getActiveSheet()->getColumnDimension('D')->setWidth(20);
+                $this->excel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
+                $this->excel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
+                $this->excel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
 
-            //Le aplicamos ancho las columnas.
-            $this->excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
-            $this->excel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
-            $this->excel->getActiveSheet()->getColumnDimension('C')->setWidth(70);
-            $this->excel->getActiveSheet()->getColumnDimension('D')->setWidth(20);
-            $this->excel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
-            $this->excel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
-            $this->excel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+                //Le aplicamos negrita a los títulos de la cabecera.
+                $this->excel->getActiveSheet()->getStyle("A{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("B{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("C{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("D{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("E{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("F{$contador}")->getFont()->setBold(true);
+                $this->excel->getActiveSheet()->getStyle("G{$contador}")->getFont()->setBold(true);
 
-            //Le aplicamos negrita a los títulos de la cabecera.
-            $this->excel->getActiveSheet()->getStyle("A{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("B{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("C{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("D{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("E{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("F{$contador}")->getFont()->setBold(true);
-            $this->excel->getActiveSheet()->getStyle("G{$contador}")->getFont()->setBold(true);
+                //Definimos los títulos de la cabecera.
+                $this->excel->getActiveSheet()->setCellValue("A{$contador}", 'Centro de Votación');
+                $this->excel->getActiveSheet()->setCellValue("B{$contador}", 'Mesa');
+                $this->excel->getActiveSheet()->setCellValue("C{$contador}", 'Descripción del Error');
+                $this->excel->getActiveSheet()->setCellValue("D{$contador}", 'Módelo MV');
+                $this->excel->getActiveSheet()->setCellValue("E{$contador}", 'Medio de Transmisión');
+                $this->excel->getActiveSheet()->setCellValue("F{$contador}", 'Estatus MV');
+                $this->excel->getActiveSheet()->setCellValue("G{$contador}", 'Reemplazo');
 
-            //Definimos los títulos de la cabecera.
-            $this->excel->getActiveSheet()->setCellValue("A{$contador}", 'Centro de Votación');
-            $this->excel->getActiveSheet()->setCellValue("B{$contador}", 'Mesa');
-            $this->excel->getActiveSheet()->setCellValue("C{$contador}", 'Descripción del Error');
-            $this->excel->getActiveSheet()->setCellValue("D{$contador}", 'Módelo MV');
-            $this->excel->getActiveSheet()->setCellValue("E{$contador}", 'Medio de Transmisión');
-            $this->excel->getActiveSheet()->setCellValue("F{$contador}", 'Estatus MV');
-            $this->excel->getActiveSheet()->setCellValue("G{$contador}", 'Reemplazo');
-
-            //Definimos la data del cuerpo.
-            foreach($errores as $l){
-                //Incrementamos una fila más, para ir a la siguiente.
-                $contador++;
-                //Informacion de las filas de la consulta.
-                $this->excel->getActiveSheet()->setCellValue("A{$contador}", $l->codigo_centrovotacion);
-                $this->excel->getActiveSheet()->setCellValue("B{$contador}", $l->mesa);
-                $this->excel->getActiveSheet()->setCellValue("C{$contador}", $l->error);
-                $this->excel->getActiveSheet()->setCellValue("D{$contador}", $l->modelo_maquina);
-                if ($l->medio_transmision === "\x0d" || $l->medio_transmision == null) {
-                    $this->excel->getActiveSheet()->setCellValue("E{$contador}", 'NULL');
-                } else {
-                    $this->excel->getActiveSheet()->setCellValue("E{$contador}", $l->medio_transmision);
+                //Definimos la data del cuerpo.
+                foreach($errores as $l){
+                    //Incrementamos una fila más, para ir a la siguiente.
+                    $contador++;
+                    //Informacion de las filas de la consulta.
+                    $this->excel->getActiveSheet()->setCellValue("A{$contador}", $l->codigo_centrovotacion);
+                    $this->excel->getActiveSheet()->setCellValue("B{$contador}", $l->mesa);
+                    $this->excel->getActiveSheet()->setCellValue("C{$contador}", $l->error);
+                    $this->excel->getActiveSheet()->setCellValue("D{$contador}", $l->modelo_maquina);
+                    if ($l->medio_transmision === "\x0d" || $l->medio_transmision == null) {
+                        $this->excel->getActiveSheet()->setCellValue("E{$contador}", 'NULL');
+                    } else {
+                        $this->excel->getActiveSheet()->setCellValue("E{$contador}", $l->medio_transmision);
+                    }
+                    $this->excel->getActiveSheet()->setCellValue("F{$contador}", $l->estatus_maquina);
+                    if ($l->reemplazo != null) {
+                        $this->excel->getActiveSheet()->setCellValue("G{$contador}", $l->reemplazo);
+                    } else {
+                        $this->excel->getActiveSheet()->setCellValue("G{$contador}", 'NULL');
+                    }
                 }
-                $this->excel->getActiveSheet()->setCellValue("F{$contador}", $l->estatus_maquina);
-                if ($l->reemplazo != null) {
-                    $this->excel->getActiveSheet()->setCellValue("G{$contador}", $l->reemplazo);
-                } else {
-                    $this->excel->getActiveSheet()->setCellValue("G{$contador}", 'NULL');
-                }
+
+                //Le ponemos un nombre al archivo que se va a generar.
+                $archivo = "reporte_errores_mv.xls";
+                header('Content-Type: application/vnd.ms-excel');
+                header('Content-Disposition: attachment;filename="'.$archivo.'"');
+                header('Cache-Control: max-age=0');
+                $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+                //Hacemos una salida al navegador con el archivo Excel.
+                $objWriter->save('php://output');
             }
-
-            //Le ponemos un nombre al archivo que se va a generar.
-            $archivo = "reporte_errores_mv.xls";
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="'.$archivo.'"');
-            header('Cache-Control: max-age=0');
-            $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
-            //Hacemos una salida al navegador con el archivo Excel.
-            $objWriter->save('php://output');
+        } else {
+            $this->load->helper('url');
+            redirect('/report/errors_mv', 'refresh');
         }
     }
 }
